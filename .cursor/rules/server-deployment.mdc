@@ -1,0 +1,58 @@
+---
+description: SSH deployment instructions and server details for uploading new website versions
+alwaysApply: true
+---
+
+# Server Deployment Guide
+
+## SSH Connection
+
+- **Host:** `167.235.90.88`
+- **Port:** `22`
+- **User:** `dor_game1`
+- **Auth:** SSH key at `~/.ssh/dor_games_deploy` (ed25519, already configured on server)
+
+Connect with:
+```bash
+ssh -o StrictHostKeyChecking=no -i ~/.ssh/dor_games_deploy -p 22 dor_game1@167.235.90.88
+```
+
+Upload with:
+```bash
+rsync -avz -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/dor_games_deploy -p 22" \
+  --exclude='assets/dor_photos' \
+  /tmp/deploy-staging/ \
+  dor_game1@167.235.90.88:public_html/
+```
+
+## Server Layout
+
+- **Website root:** `/var/www/74ac68ad-ffcb-4ff8-a109-6be506b93664/public_html/`
+- **Key directories:**
+  - `public_html/assets/dor_photos/` — **NEVER overwrite or delete** (photos live only on server)
+  - `public_html/assets/audio/` — audio files, safe to replace
+  - `public_html/Backup/` — do not touch unless asked
+
+## Deployment Rules (always follow)
+
+1. **Verify server identity first** — run `pwd && ls` and show the user the output before making any changes
+2. **Wait for explicit "yes, proceed"** confirmation before uploading anything
+3. **Never delete files** unless the user explicitly confirms
+4. **Never touch `assets/dor_photos/`** — always exclude it from any upload/sync
+5. **Only work inside `public_html/`** — never modify anything outside this folder
+
+## Cache Update for Home Screen Apps
+
+The `public/.htaccess` file disables caching for `index.html` so "Add to Home Screen" apps on iOS load the latest version after deployments. It is copied to `dist/` during build and deployed with rsync. If the server uses nginx instead of Apache, add equivalent cache-control rules for `index.html`.
+
+## Standard Deployment Steps
+
+1. Build (`npm run build`), then copy `dist/` to a local temp folder (`/tmp/deploy-staging/`)
+2. Confirm zip contents with the user
+3. `rsync` to server excluding `assets/dor_photos`
+4. Verify final server state with `find public_html -maxdepth 3 | sort`
+5. Report exactly which files were added/replaced
+
+## Firewall Note
+
+The server's cloud provider firewall must allow TCP port 22 inbound. If SSH times out, ask the user to check that port 22 is open in their cloud provider's firewall panel.

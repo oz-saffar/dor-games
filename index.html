@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#f4efe6" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>משחקי דור</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Secular+One&display=swap" rel="stylesheet">
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+      html { height: 100%; min-height: -webkit-fill-available; }
+      body { min-height: 100%; min-height: -webkit-fill-available; background: linear-gradient(160deg, var(--dor-shell-start, #f6f1e8) 0%, var(--dor-shell-end, #e3eef8) 100%); }
+      .app-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; background: linear-gradient(160deg, var(--dor-shell-start, #f6f1e8) 0%, var(--dor-shell-end, #e3eef8) 100%); }
+      #root { min-height: 100%; min-height: -webkit-fill-available; position: relative; z-index: 1; }
+    </style>
+  </head>
+  <body>
+    <div class="app-bg" aria-hidden="true"></div>
+    <div class="dor-grain" aria-hidden="true"></div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
