@@ -1,13 +1,25 @@
 /**
- * Hub — “arcade jewel box” launcher: aurora layers, metallic hero, rim-lit tiles
+ * Hub — launcher: hero photo, recent/favourite rows, category tabs, daily spotlight, sticker book
  */
 import { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useDorPhotos } from '../hooks/useDorPhotos';
 import { useViewport } from '../hooks/useViewport';
 import { ALL_GAMES } from '../lib/gamesConfig';
-import MonsterMunchMenuIcon from './icons/MonsterMunchMenuIcon';
+import GameTile from './home/GameTile';
+import StickerBook from './home/StickerBook';
+import { GAME_CATEGORIES, ALL_TAB, categoryOfGame } from '../lib/gameCategories';
+import { loadProgress, toggleFavourite, markStickersSeen, hasNewSticker, pickDailySpotlight } from '../lib/progress';
 import { BACKGROUND_OPTIONS, DEFAULT_BACKGROUND_ID } from '../lib/backgrounds';
+
+const TAB_KEY = 'dor-games-home-tab';
+
+const Section = ({ emoji, testId, children }) => (
+  <section data-testid={testId} className="w-full">
+    <div className="mb-1.5 text-center text-2xl leading-none" aria-hidden>{emoji}</div>
+    {children}
+  </section>
+);
 
 const MainMenu = ({ onSelectGame, onOpenConfig, soundManager, config }) => {
   const { photos } = useDorPhotos();
@@ -18,6 +30,42 @@ const MainMenu = ({ onSelectGame, onOpenConfig, soundManager, config }) => {
 
   const visibleIds = config?.visibleGames?.length ? config.visibleGames : ALL_GAMES.map((g) => g.id);
   const games = visibleIds.map((id) => ALL_GAMES.find((g) => g.id === id)).filter(Boolean);
+  const [progress, setProgress] = useState(loadProgress);
+  const [showBook, setShowBook] = useState(false);
+  // decided once per mount: the bounce shows "next time home renders"
+  const [newSticker] = useState(() => hasNewSticker(loadProgress()));
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      return window.localStorage.getItem(TAB_KEY) || ALL_TAB.id;
+    } catch {
+      return ALL_TAB.id;
+    }
+  });
+
+  const byId = (ids) => ids.map((id) => games.find((g) => g.id === id)).filter(Boolean);
+  const recentGames = byId(progress.recent);
+  const favouriteGames = byId(progress.favourites);
+  const presentCategories = GAME_CATEGORIES.filter((c) => games.some((g) => categoryOfGame(g.id) === c.id));
+  const tabs = [ALL_TAB, ...presentCategories];
+  const tabId = tabs.some((t) => t.id === activeTab) ? activeTab : ALL_TAB.id;
+  const tabGames = tabId === ALL_TAB.id ? games : games.filter((g) => categoryOfGame(g.id) === tabId);
+  const spotlightId = pickDailySpotlight(games.map((g) => g.id));
+  const featuredGame = tabGames.find((g) => g.id === spotlightId);
+  const restGames = tabGames.filter((g) => g !== featuredGame);
+
+  const renderTile = (game, extra = {}) => (
+    <GameTile
+      key={`${extra.compact ? 'c' : 'g'}-${game.id}`}
+      game={game}
+      isFavourite={progress.favourites.includes(game.id)}
+      reduce={reduce}
+      isLandscape={isLandscape}
+      onLaunch={handleGameSelect}
+      onToggleFavourite={handleToggleFavourite}
+      {...extra}
+    />
+  );
+
   const bgValue = BACKGROUND_OPTIONS.find((b) => b.id === (config?.backgroundId || DEFAULT_BACKGROUND_ID))?.value ?? BACKGROUND_OPTIONS[0].value;
 
   useEffect(() => {
@@ -41,6 +89,20 @@ const MainMenu = ({ onSelectGame, onOpenConfig, soundManager, config }) => {
       diff > 0 ? goNext() : goPrev();
     }
   };
+
+  const selectTab = (id) => {
+    setActiveTab(id);
+    try {
+      window.localStorage.setItem(TAB_KEY, id);
+    } catch {
+      /* ignore */
+    }
+  };
+  const openBook = () => {
+    setShowBook(true);
+    setProgress(markStickersSeen());
+  };
+  const handleToggleFavourite = (id) => setProgress(toggleFavourite(id));
 
   const handleGameSelect = (gameId) => {
     const game = ALL_GAMES.find(g => g.id === gameId);
@@ -81,7 +143,7 @@ const MainMenu = ({ onSelectGame, onOpenConfig, soundManager, config }) => {
       <div className="dor-hub-vignette" aria-hidden />
 
       {/* z-[200] so hero/grid (z-10) never steals taps from settings */}
-      <div className={`absolute z-[200] flex ${topBar}`}>
+      <div className={`${isLandscape ? 'fixed' : 'absolute'} z-[200] flex ${topBar}`}>
         <motion.button
           type="button"
           onClick={onOpenConfig}
@@ -90,6 +152,22 @@ const MainMenu = ({ onSelectGame, onOpenConfig, soundManager, config }) => {
           aria-label="הגדרות"
         >
           ⚙️
+        </motion.button>
+        <motion.button
+          type="button"
+          onClick={openBook}
+          data-testid="sticker-book-button"
+          animate={newSticker && !reduce ? { y: [0, -10, 0, -5, 0], rotate: [0, -8, 8, 0] } : { y: 0 }}
+          transition={newSticker ? { duration: 1.1, repeat: Infinity, repeatDelay: 1.2 } : undefined}
+          whileTap={reduce ? {} : { scale: 0.92 }}
+          className="relative ms-2 flex min-h-[48px] min-w-[48px] items-center justify-center rounded-dor-md border border-dor-border-strong bg-dor-panel text-xl text-dor-ink shadow-dor-lip-sm"
+          aria-label="ספר מדבקות"
+        >
+          📒
+          <span className="absolute -bottom-2 -end-2 rounded-full border border-dor-border bg-dor-panel px-1.5 text-[11px] font-extrabold leading-5 text-dor-ink">
+            {progress.stars}⭐
+          </span>
+          {newSticker && <span className="absolute -start-1 -top-2 text-base" aria-hidden>✨</span>}
         </motion.button>
       </div>
 
@@ -147,63 +225,59 @@ const MainMenu = ({ onSelectGame, onOpenConfig, soundManager, config }) => {
       </div>
 
       <div
-        className="relative z-10 grid w-full flex-1 content-center gap-3"
+        className="relative z-10 flex w-full min-w-0 flex-1 flex-col content-center justify-center gap-3"
         style={{
-          gridTemplateColumns: hubColumns,
           maxWidth: hubMaxWidth,
-          gap: 'clamp(12px,2.5vw,16px)',
           paddingBottom: isLandscape ? undefined : 'calc(12px + env(safe-area-inset-bottom))',
         }}
       >
-        <div className="col-span-full -mb-1 text-center">
-          <span className="font-sans text-xs font-extrabold uppercase tracking-[0.2em] text-dor-ink-muted">בחרו משחק</span>
-        </div>
-        {games.map((game, i) => (
-          <motion.div
-            key={game.id}
-            className="rounded-dor-lg"
-            style={{
-              /* the wooden bottom edge, tinted with the game's own accent */
-              boxShadow: `0 4px 0 ${game.accent}, var(--dor-shadow-card)`,
-            }}
-            initial={reduce ? false : { opacity: 0, y: 22, scale: 0.94 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{
-              delay: reduce ? 0 : 0.06 + i * 0.045,
-              type: 'spring',
-              stiffness: 380,
-              damping: 26,
-            }}
-          >
-            <motion.button
-              type="button"
-              onClick={() => handleGameSelect(game.id)}
-              whileTap={reduce ? {} : { scale: 0.97, y: 2 }}
-              whileHover={reduce ? {} : { y: -2 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 28 }}
-              className="flex min-h-[clamp(88px,12vh,128px)] w-full flex-col items-center justify-center rounded-dor-lg border border-dor-border font-sans font-extrabold text-dor-ink"
-              style={{
-                padding: 'clamp(14px, 3vw, 22px)',
-                minHeight: isLandscape ? 'clamp(76px, 18vh, 108px)' : undefined,
-                /* a whisper of the accent washed into the paper */
-                background: `linear-gradient(168deg, var(--dor-tile-face-top) 0%, color-mix(in srgb, ${game.accent} 10%, var(--dor-tile-face-bottom)) 100%)`,
-              }}
-            >
-              <span
-                className="mb-1.5 flex select-none items-center justify-center"
-                style={{ minHeight: 'clamp(38px,9vw,56px)' }}
+        {recentGames.length > 0 && (
+          <Section emoji="🕘" testId="recent-row">
+            <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+              {recentGames.map((g) => renderTile(g, { compact: true }))}
+            </div>
+          </Section>
+        )}
+
+        {favouriteGames.length > 0 && (
+          <Section emoji="⭐" testId="favourites-row">
+            <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(84px, 1fr))' }}>
+              {favouriteGames.map((g) => renderTile(g, { compact: true }))}
+            </div>
+          </Section>
+        )}
+
+        <div className="flex w-full gap-2" role="tablist" aria-label="קטגוריות">
+          {tabs.map((tab) => {
+            const selected = tab.id === activeTab;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                aria-label={tab.label}
+                data-testid={`tab-${tab.id}`}
+                onClick={() => selectTab(tab.id)}
+                className={`flex min-h-[60px] min-w-0 flex-1 select-none flex-col items-center justify-center rounded-dor-md border px-1 py-1.5 font-sans ${selected ? 'border-dor-border-strong bg-dor-panel text-dor-ink shadow-dor-lip-sm' : 'border-dor-border bg-transparent text-dor-ink-muted'}`}
               >
-                {game.id === 'monster-drag-chomp' ? (
-                  <MonsterMunchMenuIcon size={50} />
-                ) : (
-                  <span className="text-[clamp(38px,9vw,56px)]">{game.icon}</span>
-                )}
-              </span>
-              <span className="text-[clamp(14px,3.8vw,19px)] leading-tight text-dor-ink">{game.title}</span>
-            </motion.button>
-          </motion.div>
-        ))}
+                <span className="leading-none" style={{ fontSize: 'clamp(26px, 7vw, 36px)' }}>{tab.emoji}</span>
+                <span className="mt-0.5 text-center text-[10px] font-bold leading-tight">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div
+          className="grid w-full"
+          style={{ gridTemplateColumns: hubColumns, gap: 'clamp(12px,2.5vw,16px)' }}
+        >
+          {featuredGame && renderTile(featuredGame, { featured: true })}
+          {restGames.map((g) => renderTile(g))}
+        </div>
       </div>
+
+      {showBook && <StickerBook stars={progress.stars} reduce={reduce} onClose={() => setShowBook(false)} />}
     </div>
   );
 };

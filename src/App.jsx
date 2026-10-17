@@ -8,6 +8,8 @@ import { BACKGROUND_OPTIONS, DEFAULT_BACKGROUND_ID } from './lib/backgrounds';
 import { ALL_GAMES } from './lib/gamesConfig';
 import { getDefaultConfig, mergeConfigWithDefaults, CONFIG_STORAGE_KEY } from './lib/defaultConfig';
 import { normalizeRunnerDashCharacter } from './lib/runnerDashCharacter';
+import { ActiveGameContext } from './lib/ActiveGameContext';
+import { recordPlayed } from './lib/progress';
 
 /**
  * Main App — routing and global state
@@ -76,6 +78,7 @@ function App() {
   }, [config.themeMode]);
 
   const handleSelectGame = (gameId) => {
+    recordPlayed(gameId);
     setCurrentGame(gameId);
   };
 
@@ -185,55 +188,57 @@ function App() {
       )}
 
       {currentGame && GAME_COMPONENTS[currentGame] && (
-        <Suspense fallback={<LoadingFallback />}>
-          {React.createElement(GAME_COMPONENTS[currentGame], {
-            key: currentGame,
-            onExit: handleExitGame,
-            soundManager,
-            ...(currentGame === 'memory' && { numPairs: config.memoryPairs }),
-            ...(currentGame === 'monster-drag-chomp' && {
-              peopleCount: config.monsterDragChompPeopleCount,
-            }),
-            ...(currentGame === 'shadow-match' && {
-              difficulty: config.shadowMatchDifficulty,
-            }),
-            ...(currentGame === 'rhythm-tap' && {
-              difficulty: config.rhythmTapDifficulty,
-            }),
-            ...(currentGame === 'maze-rescue' && {
-              difficulty: config.mazeRescueDifficulty,
-            }),
-            ...(currentGame === 'water-sort' && {
-              difficulty: config.waterSortDifficulty,
-            }),
-            ...(currentGame === 'runner-dash' && {
-              difficulty: config.runnerDashDifficulty,
-              runnerCharacter: config.runnerDashCharacter,
-              onRunnerCharacterChange: handleRunnerDashCharacterChange,
-            }),
-            ...(currentGame === 'dino-sneak' && {
-              difficulty: config.dinoSneakDifficulty,
-            }),
-            ...(currentGame === 'dino-stomp' && {
-              difficulty: config.dinoStompDifficulty,
-            }),
-            ...(currentGame === 'web-sling' && {
-              difficulty: config.webSlingDifficulty,
-            }),
-            ...(currentGame === 'snake-garden' && {
-              difficulty: config.snakeGardenDifficulty,
-            }),
-            ...(currentGame === 'room-tidy' && {
-              difficulty: config.roomTidyDifficulty,
-            }),
-            ...(currentGame === 'arrow-escape' && {
-              difficulty: config.arrowEscapeDifficulty,
-            }),
-            ...(currentGame === 'photo-puzzle' && {
-              pieceCount: config.photoPuzzlePieces,
-            }),
-          })}
-        </Suspense>
+        <ActiveGameContext.Provider value={currentGame}>
+          <Suspense fallback={<LoadingFallback />}>
+            {React.createElement(GAME_COMPONENTS[currentGame], {
+              key: currentGame,
+              onExit: handleExitGame,
+              soundManager,
+              ...(currentGame === 'memory' && { numPairs: config.memoryPairs }),
+              ...(currentGame === 'monster-drag-chomp' && {
+                peopleCount: config.monsterDragChompPeopleCount,
+              }),
+              ...(currentGame === 'shadow-match' && {
+                difficulty: config.shadowMatchDifficulty,
+              }),
+              ...(currentGame === 'rhythm-tap' && {
+                difficulty: config.rhythmTapDifficulty,
+              }),
+              ...(currentGame === 'maze-rescue' && {
+                difficulty: config.mazeRescueDifficulty,
+              }),
+              ...(currentGame === 'water-sort' && {
+                difficulty: config.waterSortDifficulty,
+              }),
+              ...(currentGame === 'runner-dash' && {
+                difficulty: config.runnerDashDifficulty,
+                runnerCharacter: config.runnerDashCharacter,
+                onRunnerCharacterChange: handleRunnerDashCharacterChange,
+              }),
+              ...(currentGame === 'dino-sneak' && {
+                difficulty: config.dinoSneakDifficulty,
+              }),
+              ...(currentGame === 'dino-stomp' && {
+                difficulty: config.dinoStompDifficulty,
+              }),
+              ...(currentGame === 'web-sling' && {
+                difficulty: config.webSlingDifficulty,
+              }),
+              ...(currentGame === 'snake-garden' && {
+                difficulty: config.snakeGardenDifficulty,
+              }),
+              ...(currentGame === 'room-tidy' && {
+                difficulty: config.roomTidyDifficulty,
+              }),
+              ...(currentGame === 'arrow-escape' && {
+                difficulty: config.arrowEscapeDifficulty,
+              }),
+              ...(currentGame === 'photo-puzzle' && {
+                pieceCount: config.photoPuzzlePieces,
+              }),
+            })}
+          </Suspense>
+        </ActiveGameContext.Provider>
       )}
     </div>
   );

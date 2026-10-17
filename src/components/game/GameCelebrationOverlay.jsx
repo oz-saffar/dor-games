@@ -1,4 +1,7 @@
+import { useContext, useEffect, useRef } from 'react';
 import Confetti from 'react-confetti';
+import { ActiveGameContext } from '../../lib/ActiveGameContext';
+import { recordStar } from '../../lib/progress';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CELEBRATION_OVERLAY } from '../../lib/designTokens';
 
@@ -20,6 +23,14 @@ export default function GameCelebrationOverlay({
 }) {
   const reduce = useReducedMotion();
   const pieces = reduce ? 0 : numberOfPieces;
+  const activeGameId = useContext(ActiveGameContext);
+  const wasShown = useRef(false);
+
+  // Every finished round earns a star: count the false -> true transition of `show`.
+  useEffect(() => {
+    if (show && !wasShown.current && activeGameId) recordStar();
+    wasShown.current = show;
+  }, [show, activeGameId]);
 
   if (!show) return null;
 
