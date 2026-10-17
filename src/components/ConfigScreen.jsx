@@ -108,6 +108,12 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [fourInRowDifficulty, setFourInRowDifficulty] = useState(
     normalizeGameDifficulty(config.fourInRowDifficulty)
   );
+  const [kitchenSortDifficulty, setKitchenSortDifficulty] = useState(
+    normalizeGameDifficulty(config.kitchenSortDifficulty)
+  );
+  const [ticTacToeDifficulty, setTicTacToeDifficulty] = useState(
+    normalizeGameDifficulty(config.ticTacToeDifficulty)
+  );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
   );
@@ -153,6 +159,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setSpotDifferenceDifficulty(normalizeGameDifficulty(config.spotDifferenceDifficulty));
     setAnimalMergeDifficulty(normalizeGameDifficulty(config.animalMergeDifficulty));
     setFourInRowDifficulty(normalizeGameDifficulty(config.fourInRowDifficulty));
+    setKitchenSortDifficulty(normalizeGameDifficulty(config.kitchenSortDifficulty));
+    setTicTacToeDifficulty(normalizeGameDifficulty(config.ticTacToeDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -302,6 +310,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     'spot-difference': [difficultyControl(spotDifferenceDifficulty, setSpotDifferenceDifficulty)],
     'animal-merge': [difficultyControl(animalMergeDifficulty, setAnimalMergeDifficulty)],
     'four-in-row': [difficultyControl(fourInRowDifficulty, setFourInRowDifficulty)],
+    'kitchen-sort': [difficultyControl(kitchenSortDifficulty, setKitchenSortDifficulty)],
+    'tic-tac-toe': [difficultyControl(ticTacToeDifficulty, setTicTacToeDifficulty)],
     'runner-dash': [
       difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
       {
@@ -331,6 +341,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       spotDifferenceDifficulty: normalizeGameDifficulty(spotDifferenceDifficulty),
       animalMergeDifficulty: normalizeGameDifficulty(animalMergeDifficulty),
       fourInRowDifficulty: normalizeGameDifficulty(fourInRowDifficulty),
+      kitchenSortDifficulty: normalizeGameDifficulty(kitchenSortDifficulty),
+      ticTacToeDifficulty: normalizeGameDifficulty(ticTacToeDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -369,6 +381,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setSpotDifferenceDifficulty(def.spotDifferenceDifficulty);
     setAnimalMergeDifficulty(def.animalMergeDifficulty);
     setFourInRowDifficulty(def.fourInRowDifficulty);
+    setKitchenSortDifficulty(def.kitchenSortDifficulty);
+    setTicTacToeDifficulty(def.ticTacToeDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);

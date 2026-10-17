@@ -245,6 +245,12 @@ function App() {
               ...(currentGame === 'four-in-row' && {
                 difficulty: config.fourInRowDifficulty,
               }),
+              ...(currentGame === 'kitchen-sort' && {
+                difficulty: config.kitchenSortDifficulty,
+              }),
+              ...(currentGame === 'tic-tac-toe' && {
+                difficulty: config.ticTacToeDifficulty,
+              }),
               ...(currentGame === 'photo-puzzle' && {
                 pieceCount: config.photoPuzzlePieces,
               }),

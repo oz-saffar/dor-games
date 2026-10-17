@@ -12,7 +12,7 @@ import {
 } from './runnerDashCharacter';
 
 export const CONFIG_STORAGE_KEY = 'dor-games-config';
-export const GAME_VISIBILITY_SCHEMA_VERSION = 28;
+export const GAME_VISIBILITY_SCHEMA_VERSION = 30;
 
 export const MONSTER_DRAG_CHOMP_PEOPLE_MIN = 3;
 export const MONSTER_DRAG_CHOMP_PEOPLE_MAX = 15;
@@ -60,6 +60,8 @@ const AUTO_SHOW_GAME_IDS_V25 = ['pop-it'];
 const AUTO_SHOW_GAME_IDS_V26 = ['spot-difference'];
 const AUTO_SHOW_GAME_IDS_V27 = ['animal-merge'];
 const AUTO_SHOW_GAME_IDS_V28 = ['four-in-row'];
+const AUTO_SHOW_GAME_IDS_V29 = ['kitchen-sort'];
+const AUTO_SHOW_GAME_IDS_V30 = ['tic-tac-toe'];
 
 export const getDefaultConfig = () => ({
   /** 'light' | 'twilight' — maps to data-theme on <html> */
@@ -83,6 +85,8 @@ export const getDefaultConfig = () => ({
   spotDifferenceDifficulty: GAME_DIFFICULTY.EASY,
   animalMergeDifficulty: GAME_DIFFICULTY.EASY,
   fourInRowDifficulty: GAME_DIFFICULTY.EASY,
+  kitchenSortDifficulty: GAME_DIFFICULTY.EASY,
+  ticTacToeDifficulty: GAME_DIFFICULTY.EASY,
   /** מרוץ 3D — ברירת מחדל 'קשה' כמו לפני הוספת רמות */
   runnerDashDifficulty: GAME_DIFFICULTY.HARD,
   runnerDashCharacter: RUNNER_DASH_CHARACTER_DEFAULT,
@@ -259,6 +263,20 @@ export function mergeConfigWithDefaults(saved) {
     visibleGames = [...visibleGames, ...toAppend];
   }
 
+  if (visibilityVersion < 29) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V29.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 30) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V30.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
   const themeMode = migrated.themeMode === 'twilight' ? 'twilight' : 'light';
 
   return {
@@ -321,6 +339,14 @@ export function mergeConfigWithDefaults(saved) {
     fourInRowDifficulty: normalizeGameDifficulty(
       migrated.fourInRowDifficulty,
       defaults.fourInRowDifficulty
+    ),
+    kitchenSortDifficulty: normalizeGameDifficulty(
+      migrated.kitchenSortDifficulty,
+      defaults.kitchenSortDifficulty
+    ),
+    ticTacToeDifficulty: normalizeGameDifficulty(
+      migrated.ticTacToeDifficulty,
+      defaults.ticTacToeDifficulty
     ),
     runnerDashDifficulty: normalizeGameDifficulty(
       migrated.runnerDashDifficulty,
