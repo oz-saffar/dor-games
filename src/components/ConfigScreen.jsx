@@ -99,6 +99,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [popItDifficulty, setPopItDifficulty] = useState(
     normalizeGameDifficulty(config.popItDifficulty)
   );
+  const [spotDifferenceDifficulty, setSpotDifferenceDifficulty] = useState(
+    normalizeGameDifficulty(config.spotDifferenceDifficulty)
+  );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
   );
@@ -141,6 +144,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setRoomTidyDifficulty(normalizeGameDifficulty(config.roomTidyDifficulty));
     setArrowEscapeDifficulty(normalizeGameDifficulty(config.arrowEscapeDifficulty));
     setPopItDifficulty(normalizeGameDifficulty(config.popItDifficulty));
+    setSpotDifferenceDifficulty(normalizeGameDifficulty(config.spotDifferenceDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -287,6 +291,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     'room-tidy': [difficultyControl(roomTidyDifficulty, setRoomTidyDifficulty)],
     'arrow-escape': [difficultyControl(arrowEscapeDifficulty, setArrowEscapeDifficulty)],
     'pop-it': [difficultyControl(popItDifficulty, setPopItDifficulty)],
+    'spot-difference': [difficultyControl(spotDifferenceDifficulty, setSpotDifferenceDifficulty)],
     'runner-dash': [
       difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
       {
@@ -313,6 +318,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       roomTidyDifficulty: normalizeGameDifficulty(roomTidyDifficulty),
       arrowEscapeDifficulty: normalizeGameDifficulty(arrowEscapeDifficulty),
       popItDifficulty: normalizeGameDifficulty(popItDifficulty),
+      spotDifferenceDifficulty: normalizeGameDifficulty(spotDifferenceDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -348,6 +354,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setRoomTidyDifficulty(def.roomTidyDifficulty);
     setArrowEscapeDifficulty(def.arrowEscapeDifficulty);
     setPopItDifficulty(def.popItDifficulty);
+    setSpotDifferenceDifficulty(def.spotDifferenceDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);

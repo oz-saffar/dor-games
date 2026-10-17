@@ -236,6 +236,9 @@ function App() {
               ...(currentGame === 'pop-it' && {
                 difficulty: config.popItDifficulty,
               }),
+              ...(currentGame === 'spot-difference' && {
+                difficulty: config.spotDifferenceDifficulty,
+              }),
               ...(currentGame === 'photo-puzzle' && {
                 pieceCount: config.photoPuzzlePieces,
               }),
