@@ -1,9 +1,9 @@
 import { PIECES } from './ticTacToeConfig';
 
-/** Two huge buttons: Dor chooses who he plays. */
+/** Two huge buttons: Dor chooses which piece to play. A plain group, like רשת!'s hero picker — not a second dialog stacked on the instructions. */
 const Picker = ({ onPick, size }) => (
   <div
-    role="dialog"
+    role="group"
     aria-label="בוחרים שחקן"
     style={{
       position: 'absolute', inset: 0, zIndex: 40, display: 'flex', flexDirection: 'column',
