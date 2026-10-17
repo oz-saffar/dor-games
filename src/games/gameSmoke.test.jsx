@@ -88,7 +88,11 @@ const mountGame = async (id, extraProps = {}) => {
   );
 
   // Wait past the lazy() boundary.
-  await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument());
+  // The first lazy import of a run pays the cold transform, which can outlast
+  // waitFor's 1s default.
+  await waitFor(() => expect(screen.queryByTestId('loading')).not.toBeInTheDocument(), {
+    timeout: 8000,
+  });
   return { onExit, soundManager };
 };
 

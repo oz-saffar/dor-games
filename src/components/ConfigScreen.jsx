@@ -93,6 +93,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [roomTidyDifficulty, setRoomTidyDifficulty] = useState(
     normalizeGameDifficulty(config.roomTidyDifficulty)
   );
+  const [arrowEscapeDifficulty, setArrowEscapeDifficulty] = useState(
+    normalizeGameDifficulty(config.arrowEscapeDifficulty)
+  );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
   );
@@ -133,6 +136,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setWebSlingDifficulty(normalizeGameDifficulty(config.webSlingDifficulty));
     setSnakeGardenDifficulty(normalizeGameDifficulty(config.snakeGardenDifficulty));
     setRoomTidyDifficulty(normalizeGameDifficulty(config.roomTidyDifficulty));
+    setArrowEscapeDifficulty(normalizeGameDifficulty(config.arrowEscapeDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -277,6 +281,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     'web-sling': [difficultyControl(webSlingDifficulty, setWebSlingDifficulty)],
     'snake-garden': [difficultyControl(snakeGardenDifficulty, setSnakeGardenDifficulty)],
     'room-tidy': [difficultyControl(roomTidyDifficulty, setRoomTidyDifficulty)],
+    'arrow-escape': [difficultyControl(arrowEscapeDifficulty, setArrowEscapeDifficulty)],
     'runner-dash': [
       difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
       {
@@ -301,6 +306,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       webSlingDifficulty: normalizeGameDifficulty(webSlingDifficulty),
       snakeGardenDifficulty: normalizeGameDifficulty(snakeGardenDifficulty),
       roomTidyDifficulty: normalizeGameDifficulty(roomTidyDifficulty),
+      arrowEscapeDifficulty: normalizeGameDifficulty(arrowEscapeDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -334,6 +340,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setWebSlingDifficulty(def.webSlingDifficulty);
     setSnakeGardenDifficulty(def.snakeGardenDifficulty);
     setRoomTidyDifficulty(def.roomTidyDifficulty);
+    setArrowEscapeDifficulty(def.arrowEscapeDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);

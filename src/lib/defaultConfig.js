@@ -12,7 +12,7 @@ import {
 } from './runnerDashCharacter';
 
 export const CONFIG_STORAGE_KEY = 'dor-games-config';
-export const GAME_VISIBILITY_SCHEMA_VERSION = 23;
+export const GAME_VISIBILITY_SCHEMA_VERSION = 24;
 
 export const MONSTER_DRAG_CHOMP_PEOPLE_MIN = 3;
 export const MONSTER_DRAG_CHOMP_PEOPLE_MAX = 15;
@@ -55,6 +55,7 @@ const AUTO_SHOW_GAME_IDS_V20 = ['web-sling'];
 const AUTO_HIDE_GAME_IDS_V21 = DEFAULT_HIDDEN_GAMES;
 const AUTO_SHOW_GAME_IDS_V22 = ['snake-garden'];
 const AUTO_SHOW_GAME_IDS_V23 = ['room-tidy'];
+const AUTO_SHOW_GAME_IDS_V24 = ['arrow-escape'];
 
 export const getDefaultConfig = () => ({
   /** 'light' | 'twilight' — maps to data-theme on <html> */
@@ -73,6 +74,7 @@ export const getDefaultConfig = () => ({
   snakeGardenDifficulty: GAME_DIFFICULTY.EASY,
   /** מסדרים את הבית */
   roomTidyDifficulty: GAME_DIFFICULTY.EASY,
+  arrowEscapeDifficulty: GAME_DIFFICULTY.EASY,
   /** מרוץ 3D — ברירת מחדל 'קשה' כמו לפני הוספת רמות */
   runnerDashDifficulty: GAME_DIFFICULTY.HARD,
   runnerDashCharacter: RUNNER_DASH_CHARACTER_DEFAULT,
@@ -214,6 +216,13 @@ export function mergeConfigWithDefaults(saved) {
     visibleGames = [...visibleGames, ...toAppend];
   }
 
+  if (visibilityVersion < 24) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V24.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
   const themeMode = migrated.themeMode === 'twilight' ? 'twilight' : 'light';
 
   return {
@@ -256,6 +265,10 @@ export function mergeConfigWithDefaults(saved) {
     roomTidyDifficulty: normalizeGameDifficulty(
       migrated.roomTidyDifficulty,
       defaults.roomTidyDifficulty
+    ),
+    arrowEscapeDifficulty: normalizeGameDifficulty(
+      migrated.arrowEscapeDifficulty,
+      defaults.arrowEscapeDifficulty
     ),
     runnerDashDifficulty: normalizeGameDifficulty(
       migrated.runnerDashDifficulty,

@@ -27,4 +27,5 @@ export const GAME_COMPONENTS = {
   'web-sling': lazy(() => import('../games/webSling/WebSlingGame')),
   'snake-garden': lazy(() => import('../games/snakeGarden/SnakeGardenGame')),
   'room-tidy': lazy(() => import('../games/roomTidy/RoomTidyGame')),
+  'arrow-escape': lazy(() => import('../games/arrowEscape/ArrowEscapeGame')),
 };

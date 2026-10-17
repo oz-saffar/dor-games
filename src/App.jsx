@@ -226,6 +226,9 @@ function App() {
             ...(currentGame === 'room-tidy' && {
               difficulty: config.roomTidyDifficulty,
             }),
+            ...(currentGame === 'arrow-escape' && {
+              difficulty: config.arrowEscapeDifficulty,
+            }),
             ...(currentGame === 'photo-puzzle' && {
               pieceCount: config.photoPuzzlePieces,
             }),
