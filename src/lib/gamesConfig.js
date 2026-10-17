@@ -29,6 +29,7 @@ export const ALL_GAMES = [
   { id: 'snake-garden', title: 'הנחש הרעב', icon: '🐍', accent: '#8fa98a' },
   { id: 'room-tidy', title: 'מסדרים את הבית', icon: '🏠', accent: '#c9b08a' },
   { id: 'arrow-escape', title: 'חצים', icon: '➡️', accent: '#7e9bb5' },
+  { id: 'pop-it', title: 'פופ-איט', icon: '🫧', accent: '#c08b8b' },
   { id: 'dino-ar', title: 'ציד AR', icon: '🦖', accent: '#6e8b6e', externalUrl: '/dino-ar/' },
   { id: 'dino-hunt', title: 'ציד דינוזאורים', icon: '🦕', accent: '#8fa98a', externalUrl: '/dino-hunt/' },
 ];

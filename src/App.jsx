@@ -233,6 +233,9 @@ function App() {
               ...(currentGame === 'arrow-escape' && {
                 difficulty: config.arrowEscapeDifficulty,
               }),
+              ...(currentGame === 'pop-it' && {
+                difficulty: config.popItDifficulty,
+              }),
               ...(currentGame === 'photo-puzzle' && {
                 pieceCount: config.photoPuzzlePieces,
               }),
