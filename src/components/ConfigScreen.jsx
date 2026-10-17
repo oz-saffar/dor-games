@@ -114,6 +114,12 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [ticTacToeDifficulty, setTicTacToeDifficulty] = useState(
     normalizeGameDifficulty(config.ticTacToeDifficulty)
   );
+  const [colorBookDifficulty, setColorBookDifficulty] = useState(
+    normalizeGameDifficulty(config.colorBookDifficulty)
+  );
+  const [xylophoneDifficulty, setXylophoneDifficulty] = useState(
+    normalizeGameDifficulty(config.xylophoneDifficulty)
+  );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
   );
@@ -161,6 +167,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setFourInRowDifficulty(normalizeGameDifficulty(config.fourInRowDifficulty));
     setKitchenSortDifficulty(normalizeGameDifficulty(config.kitchenSortDifficulty));
     setTicTacToeDifficulty(normalizeGameDifficulty(config.ticTacToeDifficulty));
+    setColorBookDifficulty(normalizeGameDifficulty(config.colorBookDifficulty));
+    setXylophoneDifficulty(normalizeGameDifficulty(config.xylophoneDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -312,6 +320,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     'four-in-row': [difficultyControl(fourInRowDifficulty, setFourInRowDifficulty)],
     'kitchen-sort': [difficultyControl(kitchenSortDifficulty, setKitchenSortDifficulty)],
     'tic-tac-toe': [difficultyControl(ticTacToeDifficulty, setTicTacToeDifficulty)],
+    'color-book': [difficultyControl(colorBookDifficulty, setColorBookDifficulty)],
+    'xylophone': [difficultyControl(xylophoneDifficulty, setXylophoneDifficulty)],
     'runner-dash': [
       difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
       {
@@ -343,6 +353,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       fourInRowDifficulty: normalizeGameDifficulty(fourInRowDifficulty),
       kitchenSortDifficulty: normalizeGameDifficulty(kitchenSortDifficulty),
       ticTacToeDifficulty: normalizeGameDifficulty(ticTacToeDifficulty),
+      colorBookDifficulty: normalizeGameDifficulty(colorBookDifficulty),
+      xylophoneDifficulty: normalizeGameDifficulty(xylophoneDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -383,6 +395,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setFourInRowDifficulty(def.fourInRowDifficulty);
     setKitchenSortDifficulty(def.kitchenSortDifficulty);
     setTicTacToeDifficulty(def.ticTacToeDifficulty);
+    setColorBookDifficulty(def.colorBookDifficulty);
+    setXylophoneDifficulty(def.xylophoneDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);

@@ -12,7 +12,7 @@ import {
 } from './runnerDashCharacter';
 
 export const CONFIG_STORAGE_KEY = 'dor-games-config';
-export const GAME_VISIBILITY_SCHEMA_VERSION = 30;
+export const GAME_VISIBILITY_SCHEMA_VERSION = 32;
 
 export const MONSTER_DRAG_CHOMP_PEOPLE_MIN = 3;
 export const MONSTER_DRAG_CHOMP_PEOPLE_MAX = 15;
@@ -62,6 +62,8 @@ const AUTO_SHOW_GAME_IDS_V27 = ['animal-merge'];
 const AUTO_SHOW_GAME_IDS_V28 = ['four-in-row'];
 const AUTO_SHOW_GAME_IDS_V29 = ['kitchen-sort'];
 const AUTO_SHOW_GAME_IDS_V30 = ['tic-tac-toe'];
+const AUTO_SHOW_GAME_IDS_V31 = ['color-book'];
+const AUTO_SHOW_GAME_IDS_V32 = ['xylophone'];
 
 export const getDefaultConfig = () => ({
   /** 'light' | 'twilight' — maps to data-theme on <html> */
@@ -87,6 +89,8 @@ export const getDefaultConfig = () => ({
   fourInRowDifficulty: GAME_DIFFICULTY.EASY,
   kitchenSortDifficulty: GAME_DIFFICULTY.EASY,
   ticTacToeDifficulty: GAME_DIFFICULTY.EASY,
+  colorBookDifficulty: GAME_DIFFICULTY.EASY,
+  xylophoneDifficulty: GAME_DIFFICULTY.EASY,
   /** מרוץ 3D — ברירת מחדל 'קשה' כמו לפני הוספת רמות */
   runnerDashDifficulty: GAME_DIFFICULTY.HARD,
   runnerDashCharacter: RUNNER_DASH_CHARACTER_DEFAULT,
@@ -277,6 +281,20 @@ export function mergeConfigWithDefaults(saved) {
     visibleGames = [...visibleGames, ...toAppend];
   }
 
+  if (visibilityVersion < 31) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V31.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 32) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V32.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
   const themeMode = migrated.themeMode === 'twilight' ? 'twilight' : 'light';
 
   return {
@@ -347,6 +365,14 @@ export function mergeConfigWithDefaults(saved) {
     ticTacToeDifficulty: normalizeGameDifficulty(
       migrated.ticTacToeDifficulty,
       defaults.ticTacToeDifficulty
+    ),
+    colorBookDifficulty: normalizeGameDifficulty(
+      migrated.colorBookDifficulty,
+      defaults.colorBookDifficulty
+    ),
+    xylophoneDifficulty: normalizeGameDifficulty(
+      migrated.xylophoneDifficulty,
+      defaults.xylophoneDifficulty
     ),
     runnerDashDifficulty: normalizeGameDifficulty(
       migrated.runnerDashDifficulty,

@@ -251,6 +251,12 @@ function App() {
               ...(currentGame === 'tic-tac-toe' && {
                 difficulty: config.ticTacToeDifficulty,
               }),
+              ...(currentGame === 'color-book' && {
+                difficulty: config.colorBookDifficulty,
+              }),
+              ...(currentGame === 'xylophone' && {
+                difficulty: config.xylophoneDifficulty,
+              }),
               ...(currentGame === 'photo-puzzle' && {
                 pieceCount: config.photoPuzzlePieces,
               }),
