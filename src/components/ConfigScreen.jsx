@@ -102,6 +102,12 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [spotDifferenceDifficulty, setSpotDifferenceDifficulty] = useState(
     normalizeGameDifficulty(config.spotDifferenceDifficulty)
   );
+  const [animalMergeDifficulty, setAnimalMergeDifficulty] = useState(
+    normalizeGameDifficulty(config.animalMergeDifficulty)
+  );
+  const [fourInRowDifficulty, setFourInRowDifficulty] = useState(
+    normalizeGameDifficulty(config.fourInRowDifficulty)
+  );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
   );
@@ -145,6 +151,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setArrowEscapeDifficulty(normalizeGameDifficulty(config.arrowEscapeDifficulty));
     setPopItDifficulty(normalizeGameDifficulty(config.popItDifficulty));
     setSpotDifferenceDifficulty(normalizeGameDifficulty(config.spotDifferenceDifficulty));
+    setAnimalMergeDifficulty(normalizeGameDifficulty(config.animalMergeDifficulty));
+    setFourInRowDifficulty(normalizeGameDifficulty(config.fourInRowDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -292,6 +300,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     'arrow-escape': [difficultyControl(arrowEscapeDifficulty, setArrowEscapeDifficulty)],
     'pop-it': [difficultyControl(popItDifficulty, setPopItDifficulty)],
     'spot-difference': [difficultyControl(spotDifferenceDifficulty, setSpotDifferenceDifficulty)],
+    'animal-merge': [difficultyControl(animalMergeDifficulty, setAnimalMergeDifficulty)],
+    'four-in-row': [difficultyControl(fourInRowDifficulty, setFourInRowDifficulty)],
     'runner-dash': [
       difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
       {
@@ -319,6 +329,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       arrowEscapeDifficulty: normalizeGameDifficulty(arrowEscapeDifficulty),
       popItDifficulty: normalizeGameDifficulty(popItDifficulty),
       spotDifferenceDifficulty: normalizeGameDifficulty(spotDifferenceDifficulty),
+      animalMergeDifficulty: normalizeGameDifficulty(animalMergeDifficulty),
+      fourInRowDifficulty: normalizeGameDifficulty(fourInRowDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -355,6 +367,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setArrowEscapeDifficulty(def.arrowEscapeDifficulty);
     setPopItDifficulty(def.popItDifficulty);
     setSpotDifferenceDifficulty(def.spotDifferenceDifficulty);
+    setAnimalMergeDifficulty(def.animalMergeDifficulty);
+    setFourInRowDifficulty(def.fourInRowDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);

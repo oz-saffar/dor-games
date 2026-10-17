@@ -31,6 +31,8 @@ export const ALL_GAMES = [
   { id: 'arrow-escape', title: 'חצים', icon: '➡️', accent: '#7e9bb5' },
   { id: 'pop-it', title: 'פופ-איט', icon: '🫧', accent: '#c08b8b' },
   { id: 'spot-difference', title: 'מצא את ההבדלים', icon: '🔍', accent: '#6e8b6e' },
+  { id: 'animal-merge', title: 'מיזוג חיות', icon: '🐣', accent: '#d9a441' },
+  { id: 'four-in-row', title: 'ארבע בשורה', icon: '🔴', accent: '#c97b5a' },
   { id: 'dino-ar', title: 'ציד AR', icon: '🦖', accent: '#6e8b6e', externalUrl: '/dino-ar/' },
   { id: 'dino-hunt', title: 'ציד דינוזאורים', icon: '🦕', accent: '#8fa98a', externalUrl: '/dino-hunt/' },
 ];

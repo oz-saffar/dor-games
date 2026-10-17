@@ -239,6 +239,12 @@ function App() {
               ...(currentGame === 'spot-difference' && {
                 difficulty: config.spotDifferenceDifficulty,
               }),
+              ...(currentGame === 'animal-merge' && {
+                difficulty: config.animalMergeDifficulty,
+              }),
+              ...(currentGame === 'four-in-row' && {
+                difficulty: config.fourInRowDifficulty,
+              }),
               ...(currentGame === 'photo-puzzle' && {
                 pieceCount: config.photoPuzzlePieces,
               }),
