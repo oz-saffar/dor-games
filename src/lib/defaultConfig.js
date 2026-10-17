@@ -3,7 +3,7 @@
  * Keeps localStorage key stable across app versions
  */
 import { migrateSoundConfig, DEFAULT_WIN_PHRASES, DEFAULT_LOSE_PHRASES } from './soundPhrases';
-import { ALL_GAMES, DEFAULT_VISIBLE_GAMES } from './gamesConfig';
+import { ALL_GAMES, DEFAULT_HIDDEN_GAMES, DEFAULT_VISIBLE_GAMES } from './gamesConfig';
 import { DEFAULT_BACKGROUND_ID } from './backgrounds';
 import { GAME_DIFFICULTY, normalizeGameDifficulty } from './gameDifficulties';
 import {
@@ -12,10 +12,23 @@ import {
 } from './runnerDashCharacter';
 
 export const CONFIG_STORAGE_KEY = 'dor-games-config';
-export const GAME_VISIBILITY_SCHEMA_VERSION = 13;
+export const GAME_VISIBILITY_SCHEMA_VERSION = 23;
 
 export const MONSTER_DRAG_CHOMP_PEOPLE_MIN = 3;
 export const MONSTER_DRAG_CHOMP_PEOPLE_MAX = 15;
+
+export const PHOTO_PUZZLE_PIECES_MIN = 4;
+export const PHOTO_PUZZLE_PIECES_MAX = 24;
+
+/** How many pieces פאזל תמונות slices the photo into */
+export function normalizePhotoPuzzlePieces(value, fallback = 12) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(
+    PHOTO_PUZZLE_PIECES_MIN,
+    Math.min(PHOTO_PUZZLE_PIECES_MAX, Math.round(n))
+  );
+}
 
 /** Integer headcount for מפלצת מעל החברים */
 export function normalizeMonsterDragChompPeopleCount(value, fallback = 8) {
@@ -27,15 +40,21 @@ export function normalizeMonsterDragChompPeopleCount(value, fallback = 8) {
   );
 }
 const AUTO_SHOW_GAME_IDS_V2 = ['shadow-match', 'rhythm-tap', 'maze-rescue'];
-const AUTO_SHOW_GAME_IDS_V3 = ['puzzle-drag', 'runner-dash'];
+const AUTO_SHOW_GAME_IDS_V3 = ['runner-dash'];
 const AUTO_SHOW_GAME_IDS_V4 = ['water-sort'];
 const AUTO_SHOW_GAME_IDS_V5 = ['hide-seek'];
-const AUTO_SHOW_GAME_IDS_V6 = ['monster-munch'];
 const AUTO_SHOW_GAME_IDS_V7 = ['monster-drag-chomp'];
-const AUTO_SHOW_GAME_IDS_V8 = ['boy-cried-wolf'];
 const AUTO_SHOW_GAME_IDS_V11 = ['color-pop-hunt'];
-const AUTO_SHOW_GAME_IDS_V12 = ['football'];
-const AUTO_SHOW_GAME_IDS_V13 = ['football-drag'];
+const AUTO_SHOW_GAME_IDS_V15 = ['dino-ar'];
+const AUTO_SHOW_GAME_IDS_V16 = ['number-trace'];
+const AUTO_SHOW_GAME_IDS_V17 = ['dino-hunt'];
+const AUTO_SHOW_GAME_IDS_V18 = ['dino-sneak', 'dino-stomp'];
+const AUTO_SHOW_GAME_IDS_V19 = ['photo-puzzle'];
+const AUTO_SHOW_GAME_IDS_V20 = ['web-sling'];
+/** v21 retires the games Dor stopped playing — hidden, not deleted */
+const AUTO_HIDE_GAME_IDS_V21 = DEFAULT_HIDDEN_GAMES;
+const AUTO_SHOW_GAME_IDS_V22 = ['snake-garden'];
+const AUTO_SHOW_GAME_IDS_V23 = ['room-tidy'];
 
 export const getDefaultConfig = () => ({
   /** 'light' | 'twilight' — maps to data-theme on <html> */
@@ -45,15 +64,26 @@ export const getDefaultConfig = () => ({
   rhythmTapDifficulty: GAME_DIFFICULTY.EASY,
   mazeRescueDifficulty: GAME_DIFFICULTY.EASY,
   waterSortDifficulty: GAME_DIFFICULTY.EASY,
-  footballDifficulty: GAME_DIFFICULTY.EASY,
-  footballDragDifficulty: GAME_DIFFICULTY.EASY,
+  /** חבילת הדינוזאורים */
+  dinoSneakDifficulty: GAME_DIFFICULTY.EASY,
+  dinoStompDifficulty: GAME_DIFFICULTY.EASY,
+  /** רשת! — צוות ספיידי נגד הנבלים */
+  webSlingDifficulty: GAME_DIFFICULTY.EASY,
+  /** הנחש הרעב */
+  snakeGardenDifficulty: GAME_DIFFICULTY.EASY,
+  /** מסדרים את הבית */
+  roomTidyDifficulty: GAME_DIFFICULTY.EASY,
   /** מרוץ 3D — ברירת מחדל 'קשה' כמו לפני הוספת רמות */
   runnerDashDifficulty: GAME_DIFFICULTY.HARD,
   runnerDashCharacter: RUNNER_DASH_CHARACTER_DEFAULT,
   /** מפלצת מעל החברים — כמה דמויות בשורת המגש */
   monsterDragChompPeopleCount: 8,
+  /** פאזל תמונות — לכמה חלקים לחתוך את התמונה */
+  photoPuzzlePieces: 12,
   musicEnabled: false,
   feedbackSoundsEnabled: true,
+  /** קולות עידוד אחרי טעות — כבוי כברירת מחדל */
+  encouragementSoundsEnabled: false,
   winPhrases: DEFAULT_WIN_PHRASES,
   losePhrases: DEFAULT_LOSE_PHRASES,
   visibleGames: [...DEFAULT_VISIBLE_GAMES],
@@ -106,22 +136,8 @@ export function mergeConfigWithDefaults(saved) {
     visibleGames = [...visibleGames, ...toAppend];
   }
 
-  if (visibilityVersion < 8) {
-    const toAppend = AUTO_SHOW_GAME_IDS_V6.filter(
-      (id) => validIds.has(id) && !visibleGames.includes(id)
-    );
-    visibleGames = [...visibleGames, ...toAppend];
-  }
-
   if (visibilityVersion < 9) {
     const toAppend = AUTO_SHOW_GAME_IDS_V7.filter(
-      (id) => validIds.has(id) && !visibleGames.includes(id)
-    );
-    visibleGames = [...visibleGames, ...toAppend];
-  }
-
-  if (visibilityVersion < 10) {
-    const toAppend = AUTO_SHOW_GAME_IDS_V8.filter(
       (id) => validIds.has(id) && !visibleGames.includes(id)
     );
     visibleGames = [...visibleGames, ...toAppend];
@@ -134,15 +150,65 @@ export function mergeConfigWithDefaults(saved) {
     visibleGames = [...visibleGames, ...toAppend];
   }
 
-  if (visibilityVersion < 12) {
-    const toAppend = AUTO_SHOW_GAME_IDS_V12.filter(
+  if (visibilityVersion < 15) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V15.filter(
       (id) => validIds.has(id) && !visibleGames.includes(id)
     );
     visibleGames = [...visibleGames, ...toAppend];
   }
 
-  if (visibilityVersion < 13) {
-    const toAppend = AUTO_SHOW_GAME_IDS_V13.filter(
+  if (visibilityVersion < 16) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V16.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 17) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V17.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 18) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V18.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 19) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V19.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 20) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V20.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  // v21 retires games Dor outgrew: hide them once, but leave later manual
+  // re-enables alone (this block only runs for pre-v21 saved state).
+  if (visibilityVersion < 21) {
+    const toHide = new Set(AUTO_HIDE_GAME_IDS_V21);
+    const kept = visibleGames.filter((id) => !toHide.has(id));
+    visibleGames = kept.length > 0 ? kept : defaults.visibleGames;
+  }
+
+  if (visibilityVersion < 22) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V22.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 23) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V23.filter(
       (id) => validIds.has(id) && !visibleGames.includes(id)
     );
     visibleGames = [...visibleGames, ...toAppend];
@@ -171,13 +237,25 @@ export function mergeConfigWithDefaults(saved) {
       migrated.waterSortDifficulty,
       defaults.waterSortDifficulty
     ),
-    footballDifficulty: normalizeGameDifficulty(
-      migrated.footballDifficulty,
-      defaults.footballDifficulty
+    dinoSneakDifficulty: normalizeGameDifficulty(
+      migrated.dinoSneakDifficulty,
+      defaults.dinoSneakDifficulty
     ),
-    footballDragDifficulty: normalizeGameDifficulty(
-      migrated.footballDragDifficulty,
-      defaults.footballDragDifficulty
+    dinoStompDifficulty: normalizeGameDifficulty(
+      migrated.dinoStompDifficulty,
+      defaults.dinoStompDifficulty
+    ),
+    webSlingDifficulty: normalizeGameDifficulty(
+      migrated.webSlingDifficulty,
+      defaults.webSlingDifficulty
+    ),
+    snakeGardenDifficulty: normalizeGameDifficulty(
+      migrated.snakeGardenDifficulty,
+      defaults.snakeGardenDifficulty
+    ),
+    roomTidyDifficulty: normalizeGameDifficulty(
+      migrated.roomTidyDifficulty,
+      defaults.roomTidyDifficulty
     ),
     runnerDashDifficulty: normalizeGameDifficulty(
       migrated.runnerDashDifficulty,
@@ -189,6 +267,10 @@ export function mergeConfigWithDefaults(saved) {
     monsterDragChompPeopleCount: normalizeMonsterDragChompPeopleCount(
       migrated.monsterDragChompPeopleCount,
       defaults.monsterDragChompPeopleCount
+    ),
+    photoPuzzlePieces: normalizePhotoPuzzlePieces(
+      migrated.photoPuzzlePieces,
+      defaults.photoPuzzlePieces
     ),
   };
 }

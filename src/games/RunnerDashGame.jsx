@@ -15,9 +15,9 @@ import {
 } from '../components/game';
 
 const COLORS = {
-  skyTop: '#3b82f6',
-  skyBottom: '#dbeafe',
-  accent: '#1d4ed8',
+  skyTop: '#8fb0c9',
+  skyBottom: '#e8eef2',
+  accent: 'var(--game-accent)',
 };
 
 const INITIAL_VIEW = {
@@ -390,7 +390,7 @@ export default function RunnerDashGame({
               left: 0,
               right: 0,
               height: horizonY + 24,
-              background: 'linear-gradient(180deg, #7DD3FC 0%, #DBEAFE 100%)',
+              background: 'linear-gradient(180deg, #a8c4d8 0%, #e8eef2 100%)',
               pointerEvents: 'none',
             }}
           />
@@ -403,7 +403,7 @@ export default function RunnerDashGame({
               width: nearHalfRoadWidth * 2,
               height: roadHeight,
               transform: 'translateX(-50%)',
-              background: 'linear-gradient(180deg, #64748B 0%, #334155 55%, #1E293B 100%)',
+              background: 'linear-gradient(180deg, #9a9184 0%, #6d6559 55%, #4a4339 100%)',
               clipPath: `polygon(${50 - (farHalfRoadWidth / nearHalfRoadWidth) * 50}% 0%, ${50 + (farHalfRoadWidth / nearHalfRoadWidth) * 50}% 0%, 100% 100%, 0% 100%)`,
               boxShadow: 'inset 0 14px 30px rgba(255,255,255,0.08)',
               pointerEvents: 'none',
@@ -715,7 +715,7 @@ export default function RunnerDashGame({
           title="מרוץ כמו Temple Run! 🏃"
           buttonText="יאללה לרוץ! ✨"
           onStart={() => setShowInstructions(false)}
-          accentColor="#1D4ED8"
+          accentColor="var(--game-accent)"
         >
           <p>👀 המבט הוא מגוף ראשון - כמו במסלול אמיתי.</p>
           <p>⌨️ מקשי החצים שמאלה/ימינה במקלדת, או סווייפ ימינה/שמאלה על המסך.</p>
@@ -729,7 +729,7 @@ export default function RunnerDashGame({
         show={showCelebration}
         successText="אלוף! ממשיכים לרוץ! 🌈"
         photo={celebrationPhoto}
-        accentColor="#1D4ED8"
+        accentColor="var(--game-accent)"
         numberOfPieces={140}
       />
 

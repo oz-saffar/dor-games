@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import { useDorPhotos } from '../hooks/useDorPhotos';
 import {
   GameBackButton,
@@ -13,18 +13,24 @@ import {
  * Supports 2–20 pairs with auto-scaling grid; endless rounds (new board after each clear)
  */
 const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
-  const isLandscape = useIsLandscape();
+  const { width: vw, height: vh, isLandscape, isTablet } = useViewport();
   const [showInstructions, setShowInstructions] = useState(true);
   const [cards, setCards] = useState([]);
   const [flippedIndices, setFlippedIndices] = useState([]);
   const [matchedPairs, setMatchedPairs] = useState([]);
   const [score, setScore] = useState(0);
-  const [canFlip, setCanFlip] = useState(true);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationPhoto, setCelebrationPhoto] = useState(null);
   const celebrationTimerRef = useRef(null);
+  const mismatchTimerRef = useRef(null);
   const photoErrorRetriesRef = useRef(0);
   const { getRandomPhoto, hasPhotos, isLoading, photos } = useDorPhotos();
+
+  // Mirrors flippedIndices synchronously: two quick taps land in the same React
+  // batch, and a handler reading the state variable there would let the second
+  // tap overwrite the first instead of completing the pair. Always written
+  // alongside setFlippedIndices, never during render.
+  const flippedRef = useRef([]);
 
   // Emoji set supports up to 20 pairs
   const emojis = ['🦖', '🍦', '🎈', '⭐', '❤️', '🌈', '🐶', '🦋', '🌸', '🎸', '🚀', '🍕', '🐱', '🐻', '🍎', '🌟', '🎉', '🦄', '🐸', '🍊'];
@@ -47,6 +53,19 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
     return 5;
   };
   const cols = getColumns(totalPairs);
+  const rows = Math.ceil((totalPairs * 2) / cols);
+
+  // Cards are sized to the board, not to the width alone: on the iPad the old
+  // "as wide as 95vw allows" rule made 370px cards and pushed the bottom row —
+  // and the hint under it — clean off the screen.
+  const cardGapPx = totalPairs > 12 ? 8 : totalPairs > 6 ? 10 : 12;
+  const cardSize = (() => {
+    const chromeH = isLandscape && !isTablet ? 120 : 170;
+    const byWidth = (vw - 32 - cardGapPx * (cols - 1)) / cols;
+    const byHeight = (vh - chromeH - cardGapPx * (rows - 1)) / rows;
+    const ceiling = isTablet ? 190 : 150;
+    return Math.max(44, Math.floor(Math.min(byWidth, byHeight, ceiling)));
+  })();
 
   const initializeGame = () => {
     const selectedEmojis = emojis.slice(0, totalPairs);
@@ -60,12 +79,17 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
     }));
     
     setCards(shuffled);
+    flippedRef.current = [];
     setFlippedIndices([]);
     setMatchedPairs([]);
   };
 
+  // Latest-render copy, so the celebration timer deals a fresh board rather than
+  // replaying the one captured when it was scheduled.
   const initGameRef = useRef(initializeGame);
-  initGameRef.current = initializeGame;
+  useEffect(() => {
+    initGameRef.current = initializeGame;
+  });
 
   useEffect(() => {
     if (!showInstructions) {
@@ -76,9 +100,20 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
   useEffect(
     () => () => {
       if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
+      if (mismatchTimerRef.current) clearTimeout(mismatchTimerRef.current);
     },
     []
   );
+
+  /** Turn the two wrong cards back over, whether the timer got there or a tap did. */
+  const clearMismatch = () => {
+    if (mismatchTimerRef.current) {
+      clearTimeout(mismatchTimerRef.current);
+      mismatchTimerRef.current = null;
+    }
+    flippedRef.current = [];
+    setFlippedIndices([]);
+  };
 
   /** Pick a celebration photo once overlay is open and the photo list is ready (avoids null on first paint). */
   useEffect(() => {
@@ -102,16 +137,26 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
   }, [photos]);
 
   const handleCardClick = (index) => {
-    if (showCelebration) return;
-    if (!canFlip || flippedIndices.includes(index) || cards[index].isMatched) {
-      return;
+    if (showCelebration || cards[index].isMatched) return;
+    let flipped = flippedRef.current;
+
+    // Two wrong cards are showing and the child has already moved on. Rather than
+    // ignoring the tap for the rest of the second-long reveal — which is what made
+    // the game feel like it needed several presses — turn the pair straight back
+    // over and treat this tap as the first card of the next pair.
+    if (flipped.length >= 2) {
+      if (flipped.includes(index)) return;
+      clearMismatch();
+      flipped = [];
     }
 
-    const newFlippedIndices = [...flippedIndices, index];
+    if (flipped.includes(index)) return;
+
+    const newFlippedIndices = [...flipped, index];
+    flippedRef.current = newFlippedIndices;
     setFlippedIndices(newFlippedIndices);
 
     if (newFlippedIndices.length === 2) {
-      setCanFlip(false);
       const [first, second] = newFlippedIndices;
       
       if (cards[first].emoji === cards[second].emoji) {
@@ -124,8 +169,8 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
           idx === first || idx === second ? { ...card, isMatched: true } : card
         );
         setCards(newCards);
+        flippedRef.current = [];
         setFlippedIndices([]);
-        setCanFlip(true);
 
         if (newMatched.length === totalPairs) {
           photoErrorRetriesRef.current = 0;
@@ -140,34 +185,19 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
           }, 2200);
         }
       } else {
-        setTimeout(() => {
-          setFlippedIndices([]);
-          setCanFlip(true);
-        }, 1000);
+        mismatchTimerRef.current = setTimeout(clearMismatch, 1000);
       }
     }
   };
 
-  // Card sizing: bigger cards, max 5 per row
-  const cardFontSize = totalPairs <= 3
-    ? 'clamp(40px, 9vw, 64px)'
-    : totalPairs <= 6
-      ? 'clamp(32px, 7vw, 52px)'
-      : totalPairs <= 12
-        ? 'clamp(26px, 6vw, 42px)'
-        : 'clamp(22px, 5vw, 36px)';
-
-  const cardMinHeight = isLandscape
-    ? (totalPairs <= 3 ? '72px' : totalPairs <= 6 ? '64px' : totalPairs <= 12 ? '52px' : '42px')
-    : (totalPairs <= 3 ? '88px' : totalPairs <= 6 ? '76px' : totalPairs <= 12 ? '62px' : '52px');
-  const cardGap = isLandscape ? (totalPairs > 12 ? '6px' : totalPairs > 6 ? '8px' : '10px') : (totalPairs > 12 ? '8px' : totalPairs > 6 ? '10px' : '12px');
+  const cardFontSize = `${Math.round(cardSize * 0.52)}px`;
 
   return (
     <div style={{ 
       width: '100vw', 
       height: '100vh',
       minHeight: '-webkit-fill-available',
-      background: 'linear-gradient(145deg, #4c51bf 0%, #6b5b95 50%, #7c3aed 100%)',
+      background: 'var(--game-surface)',
       position: 'fixed',
       inset: 0,
       overflow: 'hidden',
@@ -178,7 +208,7 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
       padding: '12px'
     }}>
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="🎯" score={score} accentColor="#667eea" />
+      <GameScoreBadge icon="🎯" score={score} accentColor="var(--game-accent)" />
 
       {!showInstructions && cards.length > 0 && (
         <div style={{
@@ -187,16 +217,14 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
           alignItems: 'center',
           gap: '10px',
           width: '100%',
-          maxWidth: isLandscape ? '95vw' : '560px',
           paddingTop: 'calc(44px + env(safe-area-inset-top))'
         }}>
           <h2 style={{
             fontSize: 'clamp(22px, 5vw, 36px)',
             fontFamily: 'var(--font-display)',
             fontWeight: 400,
-            color: 'white',
+            color: 'var(--dor-ink)',
             textAlign: 'center',
-            textShadow: '0 2px 12px rgba(0,0,0,0.25)',
             margin: 0
           }}>
             מצא את הזוגות — בלי סוף!
@@ -205,10 +233,9 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
           {/* Card Grid */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-            gap: cardGap,
-            width: '100%',
-            padding: '0 5px'
+            gridTemplateColumns: `repeat(${cols}, ${cardSize}px)`,
+            gap: `${cardGapPx}px`,
+            justifyContent: 'center'
           }}>
             {cards.map((card, index) => {
               const isFlipped = flippedIndices.includes(index) || card.isMatched;
@@ -216,30 +243,34 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
               return (
                 <button
                   key={card.id}
-                  onClick={() => handleCardClick(index)}
-                  disabled={
-                    showCelebration || (!canFlip && !flippedIndices.includes(index))
-                  }
+                  // Flip on pointer-down, not click: on iOS a click after a touch is
+                  // easily swallowed (tiny finger drift), which made a card need
+                  // several presses. onClick stays for keyboard activation only
+                  // (detail === 0), so a tap never counts twice.
+                  onPointerDown={() => handleCardClick(index)}
+                  onClick={(e) => { if (e.detail === 0) handleCardClick(index); }}
+                  disabled={showCelebration || card.isMatched}
                   style={{
                     aspectRatio: '1',
-                    backgroundColor: isFlipped ? 'white' : '#4A5568',
+                    backgroundColor: isFlipped ? 'var(--dor-panel)' : 'var(--game-accent)',
                     border: 'none',
                     borderRadius: '12px',
                     fontSize: cardFontSize,
                     cursor:
-                      showCelebration || !canFlip || card.isMatched ? 'default' : 'pointer',
-                    boxShadow: '0 3px 8px rgba(0,0,0,0.3)',
+                      showCelebration || card.isMatched ? 'default' : 'pointer',
+                    boxShadow: 'var(--dor-shadow-card)',
                     transition: 'background-color 0.2s',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     opacity: card.isMatched ? 0.45 : 1,
-                    minHeight: cardMinHeight,
-                    minWidth: '0',
-                    padding: '4px'
+                    minWidth: 0,
+                    padding: '4px',
+                    // never let the browser treat a tap on a card as a pan gesture
+                    touchAction: 'none'
                   }}
                   onTouchStart={(e) => {
-                    if (!showCelebration && canFlip && !card.isMatched) {
+                    if (!showCelebration && !card.isMatched) {
                       e.currentTarget.style.transform = 'scale(0.93)';
                     }
                   }}
@@ -253,7 +284,7 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
 
           <p style={{
             fontSize: 'clamp(15px, 3.5vw, 20px)',
-            color: 'rgba(255,255,255,0.9)',
+            color: 'var(--dor-ink-muted)',
             textAlign: 'center',
             margin: 0
           }}>
@@ -267,7 +298,7 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
           title="משחק הזיכרון! 🎯"
           buttonText="בוא נשחק! 🎯"
           onStart={() => setShowInstructions(false)}
-          accentColor="#667eea"
+          accentColor="var(--game-accent)"
         >
           <p>🃏 <strong>קלפים עם אמוג'י!</strong></p>
           <p>👆 <strong>לחץ על שני קלפים</strong></p>
@@ -281,7 +312,7 @@ const MemoryMatchGame = ({ onExit, soundManager, numPairs = 3 }) => {
         successText="מצאת את כל הזוגות! 🎉"
         photo={celebrationPhoto}
         onPhotoError={handleCelebrationPhotoError}
-        accentColor="#667eea"
+        accentColor="var(--game-accent)"
         numberOfPieces={160}
       />
     </div>

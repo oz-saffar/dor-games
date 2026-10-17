@@ -1,6 +1,9 @@
 /**
  * Shared design tokens — align with CSS variables in index.css (:root).
  * Target: iPhone portrait/landscape + safe areas.
+ *
+ * Warm Paper & Clay: raised surfaces are a warm panel + 1px border + a soft
+ * shadow + a 3px bottom "lip". No glow, no glass, no gradient rims.
  */
 
 export const SAFE_INSET = 'calc(12px + env(safe-area-inset-top, 0))';
@@ -18,20 +21,32 @@ export const colors = {
   panelElevated: 'var(--dor-panel-elevated)',
   border: 'var(--dor-border)',
   borderStrong: 'var(--dor-border-strong)',
+  accent: 'var(--game-accent)',
+  card: 'var(--game-card)',
+  cardStrong: 'var(--game-card-strong)',
+  edge: 'var(--game-edge)',
+};
+
+/** The one raised-surface recipe every panel in the app is built from */
+export const SOFT_SURFACE = {
+  backgroundColor: 'var(--dor-panel)',
+  border: '1px solid var(--dor-border)',
+  boxShadow: '0 3px 0 var(--dor-lip), var(--dor-shadow-card)',
 };
 
 export const BACK_BUTTON = {
   position: 'fixed',
   top: SAFE_INSET,
   right: '12px',
-  color: '#fff',
-  border: '1px solid rgba(255,255,255,0.38)',
+  color: 'var(--dor-ink)',
+  backgroundColor: 'var(--dor-panel)',
+  border: '1px solid var(--dor-border-strong)',
   borderRadius: '999px',
-  padding: '10px 20px',
+  padding: '11px 20px',
   fontSize: '15px',
-  fontWeight: 800,
+  fontWeight: 700,
   fontFamily: 'var(--font-ui)',
-  letterSpacing: '0.02em',
+  letterSpacing: '0.01em',
   cursor: 'pointer',
   zIndex: 10000,
   display: 'flex',
@@ -41,12 +56,7 @@ export const BACK_BUTTON = {
   minHeight: 48,
   touchAction: 'manipulation',
   WebkitTapHighlightColor: 'transparent',
-  background:
-    'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 100%), linear-gradient(165deg, #e05a48 0%, var(--dor-ember) 45%, #8f2d22 100%)',
-  backdropFilter: 'blur(10px)',
-  WebkitBackdropFilter: 'blur(10px)',
-  boxShadow:
-    '0 0 0 1px rgba(0,0,0,0.12), 0 5px 0 var(--dor-ember-dark), 0 12px 36px var(--dor-glow-ember), inset 0 1px 0 rgba(255,255,255,0.45)',
+  boxShadow: '0 3px 0 var(--dor-lip), var(--dor-shadow-card)',
 };
 
 export const BACK_BUTTON_ICON_SIZE = '20px';
@@ -63,32 +73,32 @@ export const SCORE_BADGE = {
 };
 
 export const SCORE_BADGE_CONTENT = {
-  padding: '10px 18px',
+  padding: '11px 18px',
   borderRadius: '999px',
   fontSize: 'clamp(15px, 4vw, 17px)',
   fontWeight: 800,
   fontFamily: 'var(--font-ui)',
-  letterSpacing: '0.03em',
-  backgroundColor: 'var(--dor-glass)',
+  letterSpacing: '0.02em',
+  backgroundColor: 'var(--dor-panel)',
   color: 'var(--dor-ink)',
-  border: '1px solid rgba(255,255,255,0.55)',
-  backdropFilter: 'blur(14px)',
-  WebkitBackdropFilter: 'blur(14px)',
-  boxShadow:
-    '0 0 0 1px rgba(0,0,0,0.06), 0 10px 28px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.65)',
+  border: '1px solid var(--dor-border-strong)',
+  boxShadow: '0 3px 0 var(--dor-lip), var(--dor-shadow-card)',
 };
 
 export const INSTRUCTIONS_OVERLAY = {
-  maxWidth: 420,
+  maxWidth: 440,
   padding: 28,
-  titleSize: 'clamp(26px, 6vw, 38px)',
+  titleSize: 'clamp(26px, 6vw, 36px)',
   bodySize: '17px',
-  bodyLineHeight: 1.65,
+  bodyLineHeight: 1.7,
   buttonBorderRadius: 'var(--dor-radius-lg)',
+  /* Warm, lightly-dimmed scrim — the card should read as paper on a table */
+  scrim: 'rgba(58, 54, 48, 0.42)',
 };
 
 export const CELEBRATION_OVERLAY = {
   padding: '28px 32px',
-  successTextSize: 'clamp(40px, 9vw, 52px)',
+  successTextSize: 'clamp(38px, 8.5vw, 50px)',
   photoMaxHeight: '38vh',
+  scrim: 'rgba(58, 54, 48, 0.38)',
 };

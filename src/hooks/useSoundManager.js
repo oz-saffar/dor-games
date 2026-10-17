@@ -6,6 +6,9 @@ import { useRef, useCallback, useEffect, useState } from 'react';
  */
 export const useSoundManager = (config = {}) => {
   const shouldPlayFeedbackSounds = config?.feedbackSoundsEnabled !== false;
+  // Encouragement ("תמשיך לנסות", "בילבול") fires on every miss — opt-in only.
+  const shouldPlayEncouragement =
+    shouldPlayFeedbackSounds && config?.encouragementSoundsEnabled === true;
 
   const audioRefs = useRef({});
   const lastWinSoundRef = useRef(null);
@@ -159,7 +162,7 @@ export const useSoundManager = (config = {}) => {
    * Play encouragement for incorrect answers — randomly, never repeats the last one
    */
   const playEncouragement = useCallback(() => {
-    if (!shouldPlayFeedbackSounds) return;
+    if (!shouldPlayEncouragement) return;
     const phrases = config?.losePhrases?.length ? config.losePhrases : [];
     if (phrases.length === 0) {
       playSound('encTamshich');
@@ -181,7 +184,7 @@ export const useSoundManager = (config = {}) => {
     } else {
       speakHebrew(phrase.text);
     }
-  }, [playSound, speakHebrew, config?.losePhrases, shouldPlayFeedbackSounds]);
+  }, [playSound, speakHebrew, config?.losePhrases, shouldPlayEncouragement]);
 
   /**
    * Start background music

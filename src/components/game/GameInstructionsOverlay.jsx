@@ -3,81 +3,66 @@ import { INSTRUCTIONS_OVERLAY } from '../../lib/designTokens';
 import { PrimaryButton } from '../ui/PrimaryButton';
 
 /**
- * Instructions — frosted backdrop + gradient-rim “console card”
+ * Instructions — a sheet of warm paper resting on a dimmed table.
  */
 export default function GameInstructionsOverlay({
   title,
   children,
   buttonText,
   onStart,
-  accentColor = 'var(--dor-ember)',
+  accentColor = 'var(--game-accent)',
 }) {
   const reduce = useReducedMotion();
 
   return (
     <motion.div
       className="fixed inset-0 z-modal flex items-center justify-center p-5"
-      style={{
-        backgroundColor: 'rgba(8, 12, 22, 0.62)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-      }}
+      style={{ backgroundColor: INSTRUCTIONS_OVERLAY.scrim }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: reduce ? 0.01 : 0.28 }}
+      transition={{ duration: reduce ? 0.01 : 0.24 }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="game-instructions-title"
     >
-      <div className="dor-modal-rim w-full max-w-[440px]">
-        <motion.div
-          onClick={(e) => e.stopPropagation()}
-          className="rounded-[calc(var(--dor-radius-xl)-2px)] bg-dor-panel-elevated px-8 py-8 text-center"
-          style={{
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.75), inset 0 -20px 50px -30px rgba(201,76,59,0.08)',
-          }}
-          initial={reduce ? false : { opacity: 0, scale: 0.88, y: 24 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 340, damping: 26 }}
+      <motion.div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-[440px] rounded-dor-xl border border-dor-border bg-dor-panel px-8 py-9 text-center"
+        style={{ boxShadow: '0 4px 0 var(--dor-lip), var(--dor-shadow-card-hover)' }}
+        initial={reduce ? false : { opacity: 0, scale: 0.94, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+      >
+        {/* Accent seam — the card's one spot of colour */}
+        <div
+          className="mx-auto mb-6 h-1.5 w-14 rounded-full"
+          style={{ backgroundColor: accentColor }}
+          aria-hidden
+        />
+        <h2
+          id="game-instructions-title"
+          className="font-display mb-5 text-dor-ink"
+          style={{ fontSize: INSTRUCTIONS_OVERLAY.titleSize, fontWeight: 400 }}
         >
-          <h2
-            id="game-instructions-title"
-            className="font-display mb-5 text-dor-ink"
-            style={{
-              fontSize: INSTRUCTIONS_OVERLAY.titleSize,
-              fontWeight: 400,
-              backgroundImage: `linear-gradient(120deg, ${accentColor} 0%, var(--dor-ink) 55%, ${accentColor} 100%)`,
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-              WebkitTextFillColor: 'transparent',
-              filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.08))',
-            }}
-          >
-            {title}
-          </h2>
-          <div
-            className="mb-8 text-right font-sans text-dor-ink-muted"
-            style={{
-              fontSize: INSTRUCTIONS_OVERLAY.bodySize,
-              lineHeight: INSTRUCTIONS_OVERLAY.bodyLineHeight,
-            }}
-          >
-            {children}
-          </div>
-          <PrimaryButton
-            onClick={onStart}
-            className="w-full max-w-xs"
-            style={{
-              backgroundImage: 'linear-gradient(180deg, rgba(255,255,255,0.28) 0%, transparent 40%)',
-              backgroundColor: accentColor,
-              boxShadow: '0 3px 0 rgba(0,0,0,0.22)',
-            }}
-          >
-            {buttonText}
-          </PrimaryButton>
-        </motion.div>
-      </div>
+          {title}
+        </h2>
+        <div
+          className="mb-8 text-right font-sans text-dor-ink-muted"
+          style={{
+            fontSize: INSTRUCTIONS_OVERLAY.bodySize,
+            lineHeight: INSTRUCTIONS_OVERLAY.bodyLineHeight,
+          }}
+        >
+          {children}
+        </div>
+        <PrimaryButton
+          onClick={onStart}
+          className="w-full max-w-xs"
+          style={{ backgroundColor: accentColor }}
+        >
+          {buttonText}
+        </PrimaryButton>
+      </motion.div>
     </motion.div>
   );
 }

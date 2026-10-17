@@ -1,10 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import {
+  GAME_VISIBILITY_SCHEMA_VERSION,
   getDefaultConfig,
   mergeConfigWithDefaults,
   normalizeMonsterDragChompPeopleCount,
 } from './defaultConfig';
 import { RUNNER_DASH_CHARACTER, RUNNER_DASH_CHARACTER_DEFAULT } from './runnerDashCharacter';
+import { DEFAULT_HIDDEN_GAMES } from './gamesConfig';
 
 describe('getDefaultConfig', () => {
   it('returns expected structure with all keys', () => {
@@ -35,6 +37,15 @@ describe('getDefaultConfig', () => {
     expect(getDefaultConfig().feedbackSoundsEnabled).toBe(true);
   });
 
+  it('returns encouragementSoundsEnabled as false', () => {
+    expect(getDefaultConfig().encouragementSoundsEnabled).toBe(false);
+  });
+
+  it('leaves the retired games out of the default visible list', () => {
+    const { visibleGames } = getDefaultConfig();
+    DEFAULT_HIDDEN_GAMES.forEach((id) => expect(visibleGames).not.toContain(id));
+  });
+
   it('returns visibleGames as array', () => {
     const { visibleGames } = getDefaultConfig();
     expect(Array.isArray(visibleGames)).toBe(true);
@@ -51,20 +62,20 @@ describe('mergeConfigWithDefaults', () => {
   });
 
   it('filters out invalid game IDs from visibleGames', () => {
-    const saved = { visibleGames: ['bubbles', 'colors', 'invalid-game', 'memory'] };
+    const saved = { visibleGames: ['numbers', 'water-sort', 'invalid-game', 'memory'] };
     const merged = mergeConfigWithDefaults(saved);
-    expect(merged.visibleGames).toContain('bubbles');
-    expect(merged.visibleGames).toContain('colors');
+    expect(merged.visibleGames).toContain('numbers');
+    expect(merged.visibleGames).toContain('water-sort');
     expect(merged.visibleGames).toContain('memory');
     expect(merged.visibleGames).not.toContain('invalid-game');
   });
 
   it('drops removed game ids such as tiny-kitchen', () => {
     const merged = mergeConfigWithDefaults({
-      visibleGames: ['memory', 'tiny-kitchen', 'bubbles'],
+      visibleGames: ['memory', 'tiny-kitchen', 'numbers'],
     });
     expect(merged.visibleGames).toContain('memory');
-    expect(merged.visibleGames).toContain('bubbles');
+    expect(merged.visibleGames).toContain('numbers');
     expect(merged.visibleGames).not.toContain('tiny-kitchen');
   });
 
@@ -87,6 +98,23 @@ describe('mergeConfigWithDefaults', () => {
     expect(mergeConfigWithDefaults({ monsterDragChompPeopleCount: 1 }).monsterDragChompPeopleCount).toBe(3);
     expect(normalizeMonsterDragChompPeopleCount('12', 8)).toBe(12);
     expect(normalizeMonsterDragChompPeopleCount(NaN, 8)).toBe(8);
+  });
+
+  it('hides the retired games once when migrating pre-v21 saved state', () => {
+    const merged = mergeConfigWithDefaults({
+      visibleGames: ['memory', 'bubbles', 'colors', 'shadow-match', 'numbers'],
+      visibilityVersion: 20,
+    });
+    expect(merged.visibleGames).toEqual(['memory', 'numbers', 'snake-garden', 'room-tidy']);
+    expect(merged.visibilityVersion).toBe(GAME_VISIBILITY_SCHEMA_VERSION);
+  });
+
+  it('keeps a retired game that was re-enabled after the v21 migration', () => {
+    const merged = mergeConfigWithDefaults({
+      visibleGames: ['memory', 'bubbles'],
+      visibilityVersion: 21,
+    });
+    expect(merged.visibleGames).toEqual(['memory', 'bubbles', 'snake-garden', 'room-tidy']);
   });
 
   it('normalizes invalid runnerDashCharacter to default', () => {

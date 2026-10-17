@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import { SCORE_BADGE, SCORE_BADGE_CONTENT } from '../lib/designTokens';
 import {
   GameBackButton,
@@ -15,7 +15,9 @@ import {
 const COUNT_ICONS = ['🌟', '🎈', '⚽', '🎨', '🚗', '🦋', '🍎', '🌈', '🎵', '🌺', '🐠', '🎁'];
 
 const NumberTapGame = ({ onExit, soundManager }) => {
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [showInstructions, setShowInstructions] = useState(true);
   const [targetNumber, setTargetNumber] = useState(null);
   const [currentIcon, setCurrentIcon] = useState('🌟');
@@ -66,7 +68,7 @@ const NumberTapGame = ({ onExit, soundManager }) => {
       width: '100vw',
       height: '100vh',
       minHeight: '-webkit-fill-available',
-      background: 'linear-gradient(145deg, #c2410c 0%, #ea580c 50%, #fb923c 100%)',
+      background: 'var(--game-surface)',
       position: 'fixed',
       inset: 0,
       overflow: 'hidden',
@@ -87,10 +89,10 @@ const NumberTapGame = ({ onExit, soundManager }) => {
         gap: '8px',
         zIndex: 100
       }}>
-        <div style={{ ...SCORE_BADGE_CONTENT, backgroundColor: 'white', color: '#F97316' }}>
+        <div style={{ ...SCORE_BADGE_CONTENT, backgroundColor: 'var(--dor-panel)', color: '#F97316' }}>
           🏆 {score}
         </div>
-        <div style={{ ...SCORE_BADGE_CONTENT, backgroundColor: 'white', color: '#F97316' }}>
+        <div style={{ ...SCORE_BADGE_CONTENT, backgroundColor: 'var(--dor-panel)', color: '#F97316' }}>
           שלב {level}
         </div>
       </div>
@@ -104,7 +106,7 @@ const NumberTapGame = ({ onExit, soundManager }) => {
           justifyContent: 'center',
           gap: isLandscape ? 8 : 12,
           width: '100%',
-          maxWidth: isLandscape ? '95vw' : 500,
+          maxWidth: isLandscape ? (isTablet ? 1000 : '95vw') : 500,
           paddingTop: isLandscape ? 8 : 'calc(56px + env(safe-area-inset-top))',
           paddingBottom: isLandscape ? 8 : 20,
         }}>
@@ -114,9 +116,8 @@ const NumberTapGame = ({ onExit, soundManager }) => {
             fontSize: 'clamp(22px, 5vw, 36px)',
             fontFamily: 'var(--font-display)',
             fontWeight: 400,
-            color: 'white',
+            color: 'var(--dor-ink)',
             textAlign: 'center',
-            textShadow: '0 2px 12px rgba(0,0,0,0.25)',
             margin: 0
           }}>
             כמה ציורים יש במסך?
@@ -124,10 +125,10 @@ const NumberTapGame = ({ onExit, soundManager }) => {
 
           {/* Emoji display */}
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--dor-panel)',
             borderRadius: '16px',
             padding: isLandscape ? '10px 14px' : '16px 20px',
-            boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+            boxShadow: '0 3px 0 var(--dor-lip), var(--dor-shadow-card)',
             width: '100%',
             marginBottom: isLandscape ? 0 : 20,
           }}>
@@ -141,7 +142,7 @@ const NumberTapGame = ({ onExit, soundManager }) => {
                 justifyContent: 'center'
               }}>
                 {Array.from({ length: targetNumber.number }).map((_, i) => (
-                  <span key={i} style={{ fontSize: 'clamp(40px, 10vw, 62px)' }}>
+                  <span key={i} style={{ fontSize: isTablet ? 'clamp(40px, 10vw, 96px)' : 'clamp(40px, 10vw, 62px)' }}>
                     {currentIcon}
                   </span>
                 ))}
@@ -161,13 +162,15 @@ const NumberTapGame = ({ onExit, soundManager }) => {
                 key={num}
                 onClick={() => handleNumberSelect(num)}
                 style={{
-                  backgroundColor: 'white',
-                  border: '3px solid rgba(255,255,255,0.7)',
+                  backgroundColor: 'var(--dor-panel)',
+                  border: '1px solid var(--dor-border)',
                   borderRadius: '12px',
                   padding: 'clamp(8px, 2vw, 14px) 4px',
-                  minHeight: isLandscape ? 'clamp(44px, 22vh, 60px)' : 'clamp(56px, 10vh, 80px)',
+                  minHeight: isLandscape
+                    ? (isTablet ? 'clamp(44px, 22vh, 128px)' : 'clamp(44px, 22vh, 60px)')
+                    : 'clamp(56px, 10vh, 80px)',
                   minWidth: '0',
-                  fontSize: 'clamp(30px, 7vw, 50px)',
+                  fontSize: isTablet ? 'clamp(30px, 7vw, 76px)' : 'clamp(30px, 7vw, 50px)',
                   fontWeight: '900',
                   color: '#F97316',
                   cursor: 'pointer',
@@ -193,7 +196,7 @@ const NumberTapGame = ({ onExit, soundManager }) => {
           title="זיהוי מספרים! 🔢"
           buttonText="בוא נשחק! 🔢"
           onStart={handleStartGame}
-          accentColor="#F97316"
+          accentColor="var(--game-accent)"
         >
           <p>🌟 <strong>ראה כמה ציורים יש!</strong></p>
           <p>🔢 <strong>לחץ על המספר הנכון!</strong></p>
@@ -207,7 +210,7 @@ const NumberTapGame = ({ onExit, soundManager }) => {
         successText="נכון! 🎉"
         subtitle="יופי של דור!"
         photo={celebrationPhoto}
-        accentColor="#4CAF50"
+        accentColor="var(--game-accent)"
         numberOfPieces={200}
       />
     </div>

@@ -26,3 +26,7 @@ Backup/
 *.njsproj
 *.sln
 *.sw?
+
+# licensed character source art — not committed
+assets/character-sources/
+character-sheet.png

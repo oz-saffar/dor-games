@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -34,7 +34,9 @@ const ANIMALS = [
 ];
 
 const AnimalSoundsGame = ({ onExit, soundManager }) => {
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [showInstructions, setShowInstructions] = useState(true);
   const [target, setTarget]       = useState(null);   // { animal, options: [animal, ...] }
   const [score, setScore]         = useState(0);
@@ -141,7 +143,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
       width: '100vw',
       height: '100vh',
       minHeight: '-webkit-fill-available',
-      background: 'linear-gradient(145deg, #14532d 0%, #16a34a 50%, #4ade80 100%)',
+      background: 'var(--game-surface)',
       position: 'fixed',
       inset: 0,
       overflow: 'hidden',
@@ -153,7 +155,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
     }}>
 
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="⭐" score={score} accentColor="#16A34A" />
+      <GameScoreBadge icon="⭐" score={score} accentColor="var(--game-accent)" />
 
       {/* Game area */}
       {!showInstructions && target && (
@@ -161,7 +163,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
           gap: isLandscape ? 10 : 16,
-          width: '100%', maxWidth: isLandscape ? '95vw' : 480,
+          width: '100%', maxWidth: isLandscape ? (isTablet ? 1040 : '95vw') : 480,
           paddingTop: isLandscape ? 8 : 'calc(44px + env(safe-area-inset-top))',
         }}>
 
@@ -170,9 +172,8 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
             fontSize: 'clamp(20px, 5vw, 32px)',
             fontFamily: 'var(--font-display)',
             fontWeight: 400,
-            color: 'white',
+            color: 'var(--dor-ink)',
             textAlign: 'center',
-            textShadow: '0 2px 12px rgba(0,0,0,0.25)',
             margin: 0
           }}>
             ?איזו חיה עושה את הקול הזה
@@ -182,12 +183,12 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
           <button
             onClick={() => playAnimalSound(target.animal)}
             style={{
-              backgroundColor: isPlaying ? 'rgba(255,255,255,0.5)' : 'white',
+              backgroundColor: isPlaying ? 'var(--game-card-strong)' : 'var(--dor-panel)',
               border: 'none',
               borderRadius: '50%',
-              width: 'clamp(90px, 22vw, 120px)',
-              height: 'clamp(90px, 22vw, 120px)',
-              fontSize: 'clamp(44px, 11vw, 64px)',
+              width: isTablet ? 'clamp(90px, 22vw, 168px)' : 'clamp(90px, 22vw, 120px)',
+              height: isTablet ? 'clamp(90px, 22vw, 168px)' : 'clamp(90px, 22vw, 120px)',
+              fontSize: isTablet ? 'clamp(44px, 11vw, 90px)' : 'clamp(44px, 11vw, 64px)',
               cursor: 'pointer',
               boxShadow: '0 6px 20px rgba(0,0,0,0.25)',
               transition: 'transform 0.15s, background-color 0.2s',
@@ -203,7 +204,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
 
           <p style={{
             fontSize: 'clamp(14px, 3.5vw, 18px)',
-            color: 'rgba(255,255,255,0.9)',
+            color: 'var(--dor-ink-muted)',
             margin: 0, textAlign: 'center'
           }}>
             לחץ שוב להאזנה 👆
@@ -223,11 +224,13 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
                   key={animal.id}
                   onClick={() => handleOptionTap(animal)}
                   style={{
-                    backgroundColor: isCorrectHighlight ? '#BBF7D0' : 'white',
-                    border: isCorrectHighlight ? '4px solid #16A34A' : '4px solid rgba(255,255,255,0.7)',
+                    backgroundColor: isCorrectHighlight ? 'color-mix(in srgb, var(--dor-sage) 32%, var(--dor-panel))' : 'var(--dor-panel)',
+                    border: isCorrectHighlight ? '3px solid var(--dor-moss)' : '1px solid var(--dor-border)',
                     borderRadius: '16px',
                     padding: 'clamp(10px, 3vw, 18px) 6px',
-                    minHeight: isLandscape ? 'clamp(60px, 25vh, 100px)' : 'clamp(110px, 18vh, 150px)',
+                    minHeight: isLandscape
+                      ? (isTablet ? 'clamp(60px, 25vh, 180px)' : 'clamp(60px, 25vh, 100px)')
+                      : 'clamp(110px, 18vh, 150px)',
                     minWidth: '0',
                     display: 'flex', flexDirection: 'column',
                     alignItems: 'center', justifyContent: 'center',
@@ -239,7 +242,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
                   onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.93)'}
                   onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                  <span style={{ fontSize: isLandscape ? 'clamp(36px, 8vw, 56px)' : 'clamp(50px, 13vw, 76px)', lineHeight: 1 }}>
+                  <span style={{ fontSize: isLandscape ? (isTablet ? 'clamp(36px, 8vw, 96px)' : 'clamp(36px, 8vw, 56px)') : 'clamp(50px, 13vw, 76px)', lineHeight: 1 }}>
                     {animal.emoji}
                   </span>
                 </button>
@@ -254,7 +257,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
           title="קולות חיות! 🐾"
           buttonText="בוא נשחק! 🐾"
           onStart={handleStart}
-          accentColor="#16A34A"
+          accentColor="var(--game-accent)"
         >
           <p>🔊 <strong>שמע את קול החיה</strong></p>
           <p>🐕 <strong>לחץ על החיה הנכונה!</strong></p>
@@ -268,7 +271,7 @@ const AnimalSoundsGame = ({ onExit, soundManager }) => {
         successText={target?.animal ? `${target.animal.emoji} כל הכבוד!` : 'כל הכבוד! 🎉'}
         subtitle={target?.animal?.name}
         photo={celebrationPhoto}
-        accentColor="#16A34A"
+        accentColor="var(--game-accent)"
         numberOfPieces={280}
       />
 

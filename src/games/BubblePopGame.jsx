@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -14,7 +14,9 @@ import {
  * Teaches hand-eye coordination and cause-effect
  */
 const BubblePopGame = ({ onExit, soundManager }) => {
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [bubbles, setBubbles] = useState([]);
   const [score, setScore] = useState(0);
   const [showInstructions, setShowInstructions] = useState(true);
@@ -30,8 +32,8 @@ const BubblePopGame = ({ onExit, soundManager }) => {
     
     const w = window.innerWidth;
     const h = window.innerHeight;
-    const maxSize = isLandscape ? 70 : 140;
-    const minSize = isLandscape ? 50 : 80;
+    const maxSize = isLandscape ? (isTablet ? 150 : 70) : 140;
+    const minSize = isLandscape ? (isTablet ? 95 : 50) : 80;
     const newBubble = {
       id: Date.now() + Math.random(),
       x: Math.random() * Math.max(50, w - 120),
@@ -43,7 +45,7 @@ const BubblePopGame = ({ onExit, soundManager }) => {
     };
     
     return newBubble;
-  }, [isLandscape]);
+  }, [isLandscape, isTablet]);
 
   // Generate initial bubbles
   useEffect(() => {
@@ -125,11 +127,11 @@ const BubblePopGame = ({ onExit, soundManager }) => {
     <div
       className="relative h-[100dvh] min-h-[100vh] w-screen overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, #8b5cf6 0%, #6d28d9 40%, #4c1d95 100%)',
+        background: 'var(--game-surface)',
       }}
     >
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="🎈" score={score} accentColor="#A855F7" />
+      <GameScoreBadge icon="🎈" score={score} accentColor="var(--game-accent)" />
 
       {/* Bubbles */}
       {bubbles.map(bubble => (
@@ -144,8 +146,8 @@ const BubblePopGame = ({ onExit, soundManager }) => {
             height: bubble.size,
             borderRadius: '50%',
             backgroundColor: bubble.color,
-            border: '4px solid rgba(255,255,255,0.3)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 4px 8px rgba(255,255,255,0.3)',
+            border: '2px solid rgba(255,255,255,0.55)',
+            boxShadow: 'var(--dor-shadow-card), inset 0 4px 10px rgba(255,255,255,0.5)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -167,7 +169,7 @@ const BubblePopGame = ({ onExit, soundManager }) => {
           title="משחק הבועות! 🎈"
           buttonText="בוא נפוצץ! 🎈"
           onStart={() => setShowInstructions(false)}
-          accentColor="#A855F7"
+          accentColor="var(--game-accent)"
         >
           <p style={{ marginBottom: '12px' }}>🎈 <strong>בועות צבעוניות עולות!</strong></p>
           <p style={{ marginBottom: '12px' }}>👆 <strong>לחץ על הבועות</strong> כדי לפוצץ אותן!</p>
@@ -182,7 +184,7 @@ const BubblePopGame = ({ onExit, soundManager }) => {
         successText="כל הכבוד! 🎉"
         subtitle={`${score} בועות! 🎈`}
         photo={celebrationPhoto}
-        accentColor="#A855F7"
+        accentColor="var(--game-accent)"
         numberOfPieces={300}
       />
 

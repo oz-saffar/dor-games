@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -398,7 +398,9 @@ function FriendFigure({ typeId, scale }) {
  */
 export default function HideSeekGame({ onExit, soundManager }) {
   const reduce = useReducedMotion();
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const lastTargetRef = useRef(null);
   const isLandscapeRef = useRef(isLandscape);
   const celebrationTimerRef = useRef(null);
@@ -454,7 +456,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
     [round, showCelebration, isLandscape, hasPhotos, getRandomPhoto, soundManager]
   );
 
-  const sceneHeight = isLandscape ? 'min(48vh, 360px)' : 'min(52vh, 440px)';
+  const sceneHeight = isLandscape ? (isTablet ? 'min(66vh, 560px)' : 'min(48vh, 360px)') : 'min(52vh, 440px)';
   /** Room above/below the bordered field so figures (anchored at feet, drawn upward) are not clipped. */
   const sceneBleedTop = isLandscape ? 'clamp(36px, 9vh, 76px)' : 'clamp(44px, 11vh, 92px)';
   const sceneBleedBottom = 'clamp(10px, 2.5vh, 20px)';
@@ -465,7 +467,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
       style={{
         minHeight: '-webkit-fill-available',
         background:
-          'radial-gradient(ellipse 100% 70% at 50% 0%, rgba(255, 248, 220, 0.35) 0%, transparent 50%), linear-gradient(180deg, #7dd3fc 0%, #38bdf8 22%, #a3e635 22%, #4d7c0f 55%, #3f6212 100%)',
+          'radial-gradient(ellipse 100% 70% at 50% 0%, rgba(255, 250, 235, 0.5) 0%, transparent 55%), linear-gradient(180deg, #cfe0ec 0%, #b8d0e2 22%, #b7c9a4 22%, #93aa82 55%, #7b9169 100%)',
       }}
     >
       <div
@@ -477,7 +479,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
       />
 
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="🔎" score={score} accentColor="#c2410c" />
+      <GameScoreBadge icon="🔎" score={score} accentColor="var(--game-accent)" />
 
       {!showInstructions && round && (
         <div
@@ -488,10 +490,9 @@ export default function HideSeekGame({ onExit, soundManager }) {
           }}
         >
           <h2
-            className="m-0 mb-1 text-center font-display font-normal text-white"
+            className="m-0 mb-1 text-center font-display font-normal text-dor-ink"
             style={{
               fontSize: 'clamp(16px, 3.6vw, 26px)',
-              textShadow: '0 2px 14px rgba(0,0,0,0.45)',
               lineHeight: 1.2,
             }}
           >
@@ -505,7 +506,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
               boxShadow: '0 8px 28px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.6)',
             }}
           >
-            <FriendFigure typeId={round.targetTypeId} scale={isLandscape ? 1.15 : 1.35} />
+            <FriendFigure typeId={round.targetTypeId} scale={isLandscape ? (isTablet ? 1.6 : 1.15) : 1.35} />
           </div>
 
           <div
@@ -556,8 +557,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
           </div>
 
           <p
-            className="mt-1.5 mb-0 text-center font-sans text-xs text-white/90 sm:text-sm"
-            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}
+            className="mt-1.5 mb-0 text-center font-sans text-xs text-dor-ink-muted sm:text-sm"
           >
             אחרי כל מציאה: אפי חדש לחיפוש וכל הקהל מתערבב מחדש
           </p>
@@ -569,7 +569,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
           title="למצוא את אפי 🔎"
           buttonText="בואו נחפש את אפי! 🔎"
           onStart={() => setShowInstructions(false)}
-          accentColor="#c2410c"
+          accentColor="var(--game-accent)"
         >
           <p>
             🎯 <strong>למעלה מופיעה אפי</strong> — רק אחד בקהל נראה בדיוק כמוה
@@ -590,7 +590,7 @@ export default function HideSeekGame({ onExit, soundManager }) {
         show={showCelebration}
         successText="נכון! מצאתם! 🎉"
         photo={celebrationPhoto}
-        accentColor="#16A34A"
+        accentColor="var(--game-accent)"
         numberOfPieces={200}
       />
     </div>

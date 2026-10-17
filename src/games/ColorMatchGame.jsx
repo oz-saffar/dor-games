@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -13,7 +13,9 @@ import {
  * Perfect for 3-year-olds learning colors
  */
 const ColorMatchGame = ({ onExit, soundManager }) => {
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [showInstructions, setShowInstructions] = useState(true);
   const [targetColor, setTargetColor] = useState(null);
   const [score, setScore] = useState(0);
@@ -23,16 +25,16 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
   const { getRandomPhoto, hasPhotos } = useDorPhotos();
 
   const colors = [
-    { name: 'אדום', nameEn: 'Red', color: '#E62429', items: ['🍎', '🍓', '🍅', '❤️', '🌹'] },
-    { name: 'כחול', nameEn: 'Blue', color: '#2B3B96', items: ['🫐', '💙', '🦋', '🐟', '🌊'] },
-    { name: 'ירוק', nameEn: 'Green', color: '#4CAF50', items: ['🍏', '🌿', '🐢', '🥒', '🌳'] },
-    { name: 'צהוב', nameEn: 'Yellow', color: '#FCD34D', items: ['🌟', '🌻', '🍌', '🧀', '☀️'] },
-    { name: 'סגול', nameEn: 'Purple', color: '#9333EA', items: ['🍇', '🔮', '🦄', '🌂', '👾'] },
-    { name: 'כתום', nameEn: 'Orange', color: '#F97316', items: ['🍊', '🎃', '🦊', '🥕', '🧡'] },
-    { name: 'ורוד', nameEn: 'Pink', color: '#EC4899', items: ['🌸', '🐷', '💗', '🦩', '🍧'] },
-    { name: 'חום', nameEn: 'Brown', color: '#92400E', items: ['🐻', '🥔', '🪵', '🍂', '🤎'] },
-    { name: 'שחור', nameEn: 'Black', color: '#1F2937', items: ['🐧', '🎩', '🖤', '⚫', '🦇'] },
-    { name: 'לבן', nameEn: 'White', color: '#F3F4F6', items: ['☁️', '🐑', '❄️', '🤍', '🥛'] }
+    { name: 'אדום', nameEn: 'Red', color: '#C4614B', items: ['🍎', '🍓', '🍅', '❤️', '🌹'] },
+    { name: 'כחול', nameEn: 'Blue', color: '#6A8FBA', items: ['🫐', '💙', '🦋', '🐟', '🌊'] },
+    { name: 'ירוק', nameEn: 'Green', color: '#6E9A63', items: ['🍏', '🌿', '🐢', '🥒', '🌳'] },
+    { name: 'צהוב', nameEn: 'Yellow', color: '#D9B441', items: ['🌟', '🌻', '🍌', '🧀', '☀️'] },
+    { name: 'סגול', nameEn: 'Purple', color: '#9179AE', items: ['🍇', '🔮', '🦄', '🌂', '👾'] },
+    { name: 'כתום', nameEn: 'Orange', color: '#D98A45', items: ['🍊', '🎃', '🦊', '🥕', '🧡'] },
+    { name: 'ורוד', nameEn: 'Pink', color: '#C57F9B', items: ['🌸', '🐷', '💗', '🦩', '🍧'] },
+    { name: 'חום', nameEn: 'Brown', color: '#A3805C', items: ['🐻', '🥔', '🪵', '🍂', '🤎'] },
+    { name: 'שחור', nameEn: 'Black', color: '#3A3630', items: ['🐧', '🎩', '🖤', '⚫', '🦇'] },
+    { name: 'לבן', nameEn: 'White', color: '#F5F0E6', items: ['☁️', '🐑', '❄️', '🤍', '🥛'] }
   ];
 
   const generateChallenge = useCallback(() => {
@@ -83,7 +85,7 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
       width: '100vw', 
       height: '100vh',
       minHeight: '-webkit-fill-available',
-      background: 'linear-gradient(145deg, #be185d 0%, #ec4899 45%, #f9a8d4 100%)',
+      background: 'var(--game-surface)',
       position: 'fixed',
       overflow: 'hidden',
       display: 'flex',
@@ -93,7 +95,7 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
       padding: '12px'
     }}>
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="⭐" score={score} accentColor="#EC4899" />
+      <GameScoreBadge icon="⭐" score={score} accentColor="var(--game-accent)" />
 
       {!showInstructions && targetColor && (
         <div style={{
@@ -101,7 +103,7 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
           flexDirection: isLandscape ? 'row' : 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: isLandscape ? 24 : 30,
+          gap: isLandscape ? (isTablet ? 56 : 24) : 30,
           maxWidth: isLandscape ? '90vw' : 600,
           width: '100%',
           flexWrap: isLandscape ? 'wrap' : 'nowrap',
@@ -112,14 +114,13 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
               fontSize: 'clamp(32px, 6vw, 48px)',
               fontFamily: 'var(--font-display)',
               fontWeight: 400,
-              color: 'white',
-              marginBottom: '20px',
-              textShadow: '0 2px 12px rgba(0,0,0,0.25)'
+              color: 'var(--dor-ink)',
+              marginBottom: '20px'
             }}>
               מצא דברים בצבע:
             </h2>
             <div style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--dor-panel)',
               borderRadius: '20px',
               padding: '30px',
               boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
@@ -130,8 +131,8 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
             }}>
               {/* Just the color - no emoji */}
               <div style={{
-                width: 'clamp(100px, 20vw, 150px)',
-                height: 'clamp(100px, 20vw, 150px)',
+                width: isTablet ? 'clamp(100px, 20vw, 220px)' : 'clamp(100px, 20vw, 150px)',
+                height: isTablet ? 'clamp(100px, 20vw, 220px)' : 'clamp(100px, 20vw, 150px)',
                 backgroundColor: targetColor.color,
                 borderRadius: '50%',
                 border: targetColor.name === 'לבן' ? '3px solid #ccc' : 'none',
@@ -154,19 +155,19 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
             gridTemplateColumns: isLandscape ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)',
             gap: isLandscape ? 8 : 12,
             width: '100%',
-            maxWidth: isLandscape ? 280 : 500,
+            maxWidth: isLandscape ? (isTablet ? 480 : 280) : 500,
           }}>
             {targetColor.options && targetColor.options.map((option, idx) => (
               <button
                 key={idx}
                 onClick={() => handleColorSelect(option)}
                 style={{
-                  backgroundColor: 'white',
-                  border: '4px solid rgba(255,255,255,0.8)',
+                  backgroundColor: 'var(--dor-panel)',
+                  border: '1px solid var(--dor-border)',
                   borderRadius: '20px',
                   padding: '20px',
-                  minHeight: isLandscape ? 70 : 100,
-                  fontSize: isLandscape ? 'clamp(32px, 6vw, 48px)' : 'clamp(40px, 8vw, 60px)',
+                  minHeight: isLandscape ? (isTablet ? 140 : 70) : 100,
+                  fontSize: isLandscape ? (isTablet ? 'clamp(32px, 6vw, 84px)' : 'clamp(32px, 6vw, 48px)') : 'clamp(40px, 8vw, 60px)',
                   cursor: 'pointer',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                   transition: 'transform 0.2s',
@@ -189,7 +190,7 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
           title="משחק הצבעים! 🎨"
           buttonText="בוא נשחק! 🎨"
           onStart={() => setShowInstructions(false)}
-          accentColor="#EC4899"
+          accentColor="var(--game-accent)"
         >
           <p>🎨 <strong>למד צבעים!</strong></p>
           <p>👆 <strong>לחץ על הצבע הנכון</strong></p>
@@ -202,7 +203,7 @@ const ColorMatchGame = ({ onExit, soundManager }) => {
         show={showCelebration}
         successText="כל הכבוד! 🎉"
         photo={celebrationPhoto}
-        accentColor="#4CAF50"
+        accentColor="var(--game-accent)"
         numberOfPieces={200}
       />
     </div>

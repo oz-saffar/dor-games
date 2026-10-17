@@ -1,11 +1,11 @@
 import { SCORE_BADGE_CONTENT, SAFE_INSET } from '../../lib/designTokens';
 
 /**
- * Score / label badge — fixed top-left in RTL
+ * Score / label badge — fixed top-left in RTL.
  * Pass either `icon` (emoji/string) or `iconSrc` + optional `iconAlt` for a small image.
  */
 export default function GameScoreBadge({ icon, iconSrc, iconAlt, score, label, accentColor }) {
-  const color = accentColor || 'var(--dor-ember)';
+  const color = accentColor || 'var(--game-accent)';
   const content =
     label != null ? (
       label
@@ -32,9 +32,8 @@ export default function GameScoreBadge({ icon, iconSrc, iconAlt, score, label, a
         top: SAFE_INSET,
         left: '12px',
         ...SCORE_BADGE_CONTENT,
-        color,
-        borderInlineStart: `3px solid ${color}`,
-        filter: `drop-shadow(0 4px 14px color-mix(in srgb, ${color} 45%, transparent))`,
+        color: 'var(--dor-ink)',
+        borderInlineStart: `4px solid ${color}`,
       }}
     >
       {content}

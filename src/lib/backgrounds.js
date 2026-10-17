@@ -1,16 +1,18 @@
 /**
- * Home hub backgrounds — harmonized with design tokens (parchment / mist / ember family)
+ * Home hub backgrounds — Warm Paper & Clay.
+ * Every option is cream paper barely warmed by one accent from the scale, so the
+ * hub never fights the game tiles sitting on top of it.
  */
 export const BACKGROUND_OPTIONS = [
-  { id: 'clean', label: 'פסטל רך', value: 'linear-gradient(160deg, #f6f1e8 0%, #e3eef8 100%)' },
-  { id: 'sky', label: 'שמיים כחולים', value: 'linear-gradient(180deg, #b8d4f0 0%, #e8f2fc 100%)' },
-  { id: 'sunset', label: 'שקיעה', value: 'linear-gradient(155deg, #fde8d4 0%, #f5c4c8 45%, #e8d4f0 100%)' },
-  { id: 'forest', label: 'יער ירוק', value: 'linear-gradient(160deg, #dceee0 0%, #e8f5eb 55%, #cfe9d6 100%)' },
-  { id: 'lavender', label: 'לבנדר', value: 'linear-gradient(160deg, #ebe6f5 0%, #f4f2fb 100%)' },
-  { id: 'peach', label: 'אפרסק', value: 'linear-gradient(160deg, #fdecd4 0%, #fad9c4 100%)' },
-  { id: 'mint', label: 'מנטה', value: 'linear-gradient(160deg, #e4f5f0 0%, #d8efe6 100%)' },
-  { id: 'ocean', label: 'ים', value: 'linear-gradient(160deg, #c5e8f5 0%, #9dd8f0 50%, #7ec8ea 100%)' },
-  { id: 'berry', label: 'פירות יער', value: 'linear-gradient(160deg, #fce8f0 0%, #f5d0e2 100%)' },
+  { id: 'clean', label: 'נייר רך', value: 'linear-gradient(160deg, #f9f5ee 0%, #f0eadf 100%)' },
+  { id: 'sky', label: 'שמיים בהירים', value: 'linear-gradient(165deg, #f4f6f8 0%, #e4ecf1 100%)' },
+  { id: 'sunset', label: 'שקיעה', value: 'linear-gradient(160deg, #fbf2ea 0%, #f2ddd2 55%, #ecd6cf 100%)' },
+  { id: 'forest', label: 'יער', value: 'linear-gradient(160deg, #f2f5ef 0%, #e4ece1 100%)' },
+  { id: 'lavender', label: 'לבנדר', value: 'linear-gradient(160deg, #f5f2f7 0%, #eae4ef 100%)' },
+  { id: 'peach', label: 'אפרסק', value: 'linear-gradient(160deg, #fbf3e9 0%, #f4e3d2 100%)' },
+  { id: 'mint', label: 'מנטה', value: 'linear-gradient(160deg, #f0f5f3 0%, #e2ece8 100%)' },
+  { id: 'ocean', label: 'חימר', value: 'linear-gradient(160deg, #faf2ee 0%, #eedcd4 100%)' },
+  { id: 'berry', label: 'חול', value: 'linear-gradient(160deg, #faf6ee 0%, #efe4d1 100%)' },
 ];
 
 export const DEFAULT_BACKGROUND_ID = 'clean';

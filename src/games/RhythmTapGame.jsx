@@ -7,15 +7,16 @@ import {
   GameCelebrationOverlay,
 } from '../components/game';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useViewport } from '../hooks/useViewport';
 import { GAME_DIFFICULTY } from '../lib/gameDifficulties';
 
-const RHYTHM_ACCENT = '#4338ca';
+const RHYTHM_ACCENT = 'var(--game-accent)';
 
 const PADS = [
-  { id: 0, color: '#EF4444', glow: '#FCA5A5', tone: 262, label: 'אדום' },
-  { id: 1, color: '#22C55E', glow: '#86EFAC', tone: 330, label: 'ירוק' },
-  { id: 2, color: '#3B82F6', glow: '#93C5FD', tone: 392, label: 'כחול' },
-  { id: 3, color: '#F59E0B', glow: '#FCD34D', tone: 523, label: 'צהוב' },
+  { id: 0, color: '#C4614B', glow: '#E3A491', tone: 262, label: 'אדום' },
+  { id: 1, color: '#6E9A63', glow: '#A8C79E', tone: 330, label: 'ירוק' },
+  { id: 2, color: '#6A8FBA', glow: '#A6C0DA', tone: 392, label: 'כחול' },
+  { id: 3, color: '#D9B441', glow: '#EFD892', tone: 523, label: 'צהוב' },
 ];
 
 const DIFFICULTY_CONFIG = {
@@ -33,6 +34,9 @@ const randomPadId = () => Math.floor(Math.random() * PADS.length);
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const RhythmTapGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY }) => {
+  const { isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const reduceMotion = useReducedMotion();
   const audioContextRef = useRef(null);
   const playTokenRef = useRef(0);
@@ -284,7 +288,7 @@ const RhythmTapGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY
         width: '100vw',
         height: '100vh',
         minHeight: '-webkit-fill-available',
-        background: 'radial-gradient(circle at top, #312E81 0%, #111827 65%)',
+        background: 'var(--game-surface)',
         position: 'fixed',
         overflow: 'hidden',
         display: 'flex',
@@ -316,7 +320,7 @@ const RhythmTapGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY
           border: 'none',
           borderRadius: 12,
           backgroundColor: 'rgba(255,255,255,0.9)',
-          color: '#312E81',
+          color: 'var(--dor-ink)',
           minHeight: 34,
           padding: '6px 12px',
           fontSize: 14,
@@ -332,11 +336,11 @@ const RhythmTapGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY
       <GameScoreBadge icon="⭐" score={score} accentColor={RHYTHM_ACCENT} />
 
       {!showInstructions && (
-        <div style={{ width: '100%', maxWidth: 560, display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'center' }}>
-          <h2 style={{ margin: 0, color: 'white', fontSize: 'clamp(30px, 6vw, 44px)', fontFamily: 'var(--font-display)', fontWeight: 400, textAlign: 'center', textShadow: '0 2px 14px rgba(0,0,0,0.35)' }}>
+        <div style={{ width: '100%', maxWidth: isTablet ? 720 : 560, display: 'flex', flexDirection: 'column', gap: 18, alignItems: 'center' }}>
+          <h2 style={{ margin: 0, color: 'var(--dor-ink)', fontSize: 'clamp(30px, 6vw, 44px)', fontFamily: 'var(--font-display)', fontWeight: 400, textAlign: 'center' }}>
             סיימון
           </h2>
-          <p style={{ margin: 0, color: '#C7D2FE', fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
+          <p style={{ margin: 0, color: 'var(--dor-ink-muted)', fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
             {isPlayback ? 'תקשיבו ותסתכלו...' : `התור שלכם! זכרו ${sequence.length || 1} צעדים`}
           </p>
 
@@ -348,8 +352,8 @@ const RhythmTapGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY
             style={{
               border: 'none',
               borderRadius: '50%',
-              backgroundColor: isPlayback || isTransitioningRound ? '#6366F180' : 'white',
-              color: isPlayback || isTransitioningRound ? 'white' : '#312E81',
+              backgroundColor: isPlayback || isTransitioningRound ? 'var(--game-card-strong)' : 'var(--dor-panel)',
+              color: 'var(--dor-ink)',
               minHeight: 52,
               minWidth: 52,
               width: 52,
@@ -407,7 +411,7 @@ const RhythmTapGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY
       <GameCelebrationOverlay
         show={showLevelComplete}
         successText="כל הכבוד! 🎉"
-        accentColor="#15803d"
+        accentColor="var(--game-accent)"
         numberOfPieces={reduceMotion ? 0 : 180}
       />
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useDorPhotos } from '../../hooks/useDorPhotos';
-import { useIsLandscape } from '../../hooks/useOrientation';
+import { useViewport } from '../../hooks/useViewport';
 import { normalizeMonsterDragChompPeopleCount } from '../../lib/defaultConfig';
 import {
   GameBackButton,
@@ -10,7 +10,9 @@ import {
   GameCelebrationOverlay,
 } from '../../components/game';
 import MonsterIllustration from '../monsterMunch/MonsterIllustration';
+import KidIllustration from './KidIllustration';
 import PersonPuppet from './PersonPuppet';
+import MonsterPuppet from './MonsterPuppet';
 
 const PERSON_HALF = 34;
 const PERSON_HIT_PAD = 14;
@@ -20,8 +22,54 @@ const TRAY_ROW_GAP = 20;
 const TRAY_ITEM_GAP_X = 16;
 const TRAY_PAD_BOTTOM = 18;
 const MOUTH_PAD = 18;
-/** Same mouth box ratios as `MonsterMunchGame` / `MonsterIllustration` art */
-const MOUTH_INSET = { leftPct: 32, widthPct: 36, topPct: 42, heightPct: 17 };
+/** Mouth box of each eater's art, as % of its wrap — the monster's matches
+ * `MonsterMunchGame` / `MonsterIllustration`, the kid's `KidIllustration`. */
+const MOUTH_INSET_BY_MODE = {
+  monster: { leftPct: 32, widthPct: 36, topPct: 42, heightPct: 17 },
+  kid: { leftPct: 34, widthPct: 32, topPct: 51, heightPct: 17 },
+};
+
+/**
+ * Who eats whom. The in-game toggle flips between the two; everything that
+ * differs between them (art, Hebrew copy, icons) lives here so the drag,
+ * chomp and tray maths stay a single code path.
+ */
+const MODES = {
+  monster: {
+    other: 'kid',
+    Eater: MonsterIllustration,
+    Prey: PersonPuppet,
+    eaterLabel: 'מפלצת לגרירה',
+    preyLabel: 'חבר',
+    preyIcon: '👥',
+    hint: 'גררו את המפלצת מעל כל חבר',
+    toggleIcon: '🧒',
+    toggleLabel: 'ילד אוכל מפלצות',
+    title: 'מפלצת מעל החברים',
+    lines: [
+      'גררו את המפלצת כך שהפה מעל חבר אייקון.',
+      'כשהפה נוגע — המפלצת נושכת ואוכלת (בצחוק!).',
+    ],
+    success: 'המפלצת שבעה! כל הכבוד! 🎉',
+  },
+  kid: {
+    other: 'monster',
+    Eater: KidIllustration,
+    Prey: MonsterPuppet,
+    eaterLabel: 'ילד לגרירה',
+    preyLabel: 'מפלצת',
+    preyIcon: '👾',
+    hint: 'גררו את הילד מעל כל מפלצת',
+    toggleIcon: '👾',
+    toggleLabel: 'מפלצת אוכלת חברים',
+    title: 'ילד מעל המפלצות',
+    lines: [
+      'גררו את הילד כך שהפה מעל מפלצת.',
+      'כשהפה נוגע — הילד נושך ואוכל (בצחוק!).',
+    ],
+    success: 'הילד שבע! כל הכבוד! 🎉',
+  },
+};
 
 const VARIANT_POOL = ['coral', 'teal', 'amber', 'violet', 'sky'];
 
@@ -68,13 +116,14 @@ function splitRowCounts(count) {
   return rowSizes;
 }
 
-function spawnPeoplePositions(count, isLandscape) {
+function spawnPeoplePositions(count, isLandscape, scale = 1) {
   const w = typeof window !== 'undefined' ? window.innerWidth : 400;
   const h = typeof window !== 'undefined' ? window.innerHeight : 700;
-  const itemW = PERSON_HALF * 2;
-  const pad = TRAY_PAD_BOTTOM + (isLandscape ? 0 : 6);
-  const yMin = PERSON_HALF + 72;
-  const yMax = h - PERSON_HALF - 8;
+  const half = PERSON_HALF * scale;
+  const itemW = half * 2;
+  const pad = (TRAY_PAD_BOTTOM + (isLandscape ? 0 : 6)) * scale;
+  const yMin = half + 72;
+  const yMax = h - half - 8;
 
   const rowCounts = splitRowCounts(count);
   const out = [];
@@ -82,7 +131,7 @@ function spawnPeoplePositions(count, isLandscape) {
     const n = rowCounts[rowCounts.length - 1 - b];
     const gapX = fitRowGap(n, w, itemW);
     const xs = rowXs(n, w, itemW, gapX);
-    const y = h - PERSON_HALF - pad - b * (2 * PERSON_HALF + TRAY_ROW_GAP);
+    const y = h - half - pad - b * (2 * half + TRAY_ROW_GAP * scale);
     const yClamped = clamp(y, yMin, yMax);
     for (let i = 0; i < n; i += 1) {
       out.push({ x: xs[i] ?? w * 0.5, y: yClamped });
@@ -91,8 +140,8 @@ function spawnPeoplePositions(count, isLandscape) {
   return out;
 }
 
-function buildPeople(isLandscape, peopleCount) {
-  const pos = spawnPeoplePositions(peopleCount, isLandscape);
+function buildPeople(isLandscape, peopleCount, scale = 1) {
+  const pos = spawnPeoplePositions(peopleCount, isLandscape, scale);
   return Array.from({ length: peopleCount }, (_, i) => ({
     uid: newUid('p'),
     variant: VARIANT_POOL[i % VARIANT_POOL.length],
@@ -110,13 +159,13 @@ function rectsOverlap(a, b, pad = 0) {
   );
 }
 
-function mouthRectFromMonsterRect(r) {
+function mouthRectFromMonsterRect(r, inset) {
   const w = r.width;
   const h = r.height;
-  const left = r.left + (MOUTH_INSET.leftPct / 100) * w;
-  const top = r.top + (MOUTH_INSET.topPct / 100) * h;
-  const mw = (MOUTH_INSET.widthPct / 100) * w;
-  const mh = (MOUTH_INSET.heightPct / 100) * h;
+  const left = r.left + (inset.leftPct / 100) * w;
+  const top = r.top + (inset.topPct / 100) * h;
+  const mw = (inset.widthPct / 100) * w;
+  const mh = (inset.heightPct / 100) * h;
   return {
     left,
     top,
@@ -128,11 +177,16 @@ function mouthRectFromMonsterRect(r) {
 }
 
 /**
- * Drag the monster over friend icons; chomp animation + win when the crowd is gone.
+ * Drag the eater over the crowd; chomp animation + win when the crowd is gone.
+ * The in-game toggle swaps the halves round: a monster eating friends, or a kid
+ * eating monsters.
  */
 export default function MonsterDragChompGame({ onExit, soundManager, peopleCount: peopleCountProp }) {
   const peopleCount = normalizeMonsterDragChompPeopleCount(peopleCountProp, 8);
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // The whole scene is built from phone-sized pixel constants; on a tablet they
+  // leave a row of thumbnail people marooned in the middle of the glass.
+  const uiScale = isTablet ? 1.5 : 1;
   const reduce = useReducedMotion();
   const { getRandomPhoto, hasPhotos } = useDorPhotos();
 
@@ -144,6 +198,21 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
   const tryChompAtRef = useRef(() => false);
   const eatingUidRef = useRef(null);
   const showCelebrationRef = useRef(false);
+  const uiScaleRef = useRef(uiScale);
+  useEffect(() => {
+    uiScaleRef.current = uiScale;
+  }, [uiScale]);
+
+  /** 'monster' = monster eats friends, 'kid' = kid eats monsters */
+  const [mode, setMode] = useState('monster');
+  const modeCfg = MODES[mode];
+  const Eater = modeCfg.Eater;
+  const Prey = modeCfg.Prey;
+  const mouthInset = MOUTH_INSET_BY_MODE[mode];
+  const mouthInsetRef = useRef(mouthInset);
+  useEffect(() => {
+    mouthInsetRef.current = mouthInset;
+  }, [mouthInset]);
 
   const [showInstructions, setShowInstructions] = useState(true);
   const [people, setPeople] = useState(() =>
@@ -171,19 +240,21 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
     peopleListRef.current = people;
   }, [people]);
 
-  /** Reposition crowd on rotation or settings count — not when headcount drops mid-round */
+  /** Rebuild the crowd on rotation, mode flip or settings count — not when headcount drops mid-round */
   useEffect(() => {
     if (showInstructions) return;
-    setPeople(buildPeople(isLandscape, peopleCount));
+    setPeople(buildPeople(isLandscape, peopleCount, uiScale));
     setMonster((m) => ({
       x: typeof window !== 'undefined' ? window.innerWidth * 0.5 : m.x,
       y: typeof window !== 'undefined' ? window.innerHeight * 0.26 : m.y,
     }));
-  }, [isLandscape, peopleCount, showInstructions]);
+  }, [isLandscape, uiScale, peopleCount, mode, showInstructions]);
+
+  const bannerFontSize = Math.round((isLandscape ? 15 : 16) * (isTablet ? 1.3 : 1));
 
   const scoreLabel = (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <span aria-hidden>👥</span>
+      <span aria-hidden>{modeCfg.preyIcon}</span>
       <span>{people.length}</span>
     </span>
   );
@@ -193,11 +264,19 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
     const ny = window.innerHeight * 0.26;
     monsterPosRef.current = { x: nx, y: ny };
     eatingUidRef.current = null;
-    setPeople(buildPeople(isLandscape, peopleCount));
+    setPeople(buildPeople(isLandscape, peopleCount, uiScale));
     setMonster({ x: nx, y: ny });
     setEatingUid(null);
     setMouthPhase('idle');
-  }, [isLandscape, peopleCount]);
+  }, [isLandscape, uiScale, peopleCount]);
+
+  const toggleMode = useCallback(() => {
+    if (showCelebrationRef.current) return;
+    eatingUidRef.current = null;
+    setEatingUid(null);
+    setMouthPhase('idle');
+    setMode((m) => MODES[m].other);
+  }, []);
 
   const tryChompAt = useCallback(
     (monsterCenterX, monsterCenterY) => {
@@ -246,7 +325,7 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
 
       const mRect = mouthEl.closest('.mdc-monster-wrap')?.getBoundingClientRect();
       const full = mRect || mr;
-      const mshape = mouthRectFromMonsterRect(full);
+      const mshape = mouthRectFromMonsterRect(full, mouthInsetRef.current);
       const chompX = (mshape.left + mshape.right) / 2;
       const chompY = (mshape.top + mshape.bottom) / 2;
 
@@ -292,8 +371,10 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
       if (!d || d.pointerId !== e.pointerId) return;
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const nx = clamp(e.clientX - d.offsetX, MONSTER_W * 0.5 + 8, w - MONSTER_W * 0.5 - 8);
-      const ny = clamp(e.clientY - d.offsetY, MONSTER_H * 0.5 + 64, h - MONSTER_H * 0.5 - 8);
+      const mw = MONSTER_W * uiScaleRef.current;
+      const mh = MONSTER_H * uiScaleRef.current;
+      const nx = clamp(e.clientX - d.offsetX, mw * 0.5 + 8, w - mw * 0.5 - 8);
+      const ny = clamp(e.clientY - d.offsetY, mh * 0.5 + 64, h - mh * 0.5 - 8);
       monsterPosRef.current = { x: nx, y: ny };
       setMonster({ x: nx, y: ny });
     };
@@ -348,7 +429,7 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
       className="relative h-[100dvh] min-h-[100vh] w-screen touch-none overflow-hidden"
       style={{
         background:
-          'radial-gradient(120% 85% at 50% 12%, #eef2ff 0%, #c7d2fe 32%, #a5b4fc 58%, #6366f1 92%, #312e81 100%)',
+          'var(--game-surface)',
       }}
     >
       <div
@@ -360,18 +441,46 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
       />
 
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge label={scoreLabel} accentColor="#4338ca" />
+      <GameScoreBadge label={scoreLabel} accentColor="var(--game-accent)" />
 
       <div
-        className="pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+56px)] flex justify-center px-4"
-        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+56px)] flex flex-col items-center gap-2 px-4"
+        style={{ zIndex: 45 }}
       >
         <p
           className="m-0 max-w-md rounded-full border border-indigo-900/15 bg-white/40 px-5 py-2 text-center font-sans text-dor-ink shadow-lg backdrop-blur-md"
-          style={{ fontSize: isLandscape ? 15 : 16, fontWeight: 700 }}
+          style={{ fontSize: bannerFontSize, fontWeight: 700 }}
+          aria-hidden
         >
-          גררו את המפלצת מעל כל חבר
+          {modeCfg.hint}
         </p>
+        <button
+          type="button"
+          data-tap-target
+          aria-label={`להחליף ל: ${modeCfg.toggleLabel}`}
+          className="dor-lip pointer-events-auto m-0 flex items-center gap-2 rounded-full border px-4 py-2 font-sans transition-transform active:scale-95"
+          style={{
+            fontSize: bannerFontSize,
+            fontWeight: 800,
+            borderColor: 'color-mix(in srgb, var(--game-accent) 55%, var(--dor-border))',
+            background: 'color-mix(in srgb, var(--game-accent) 38%, var(--dor-panel))',
+            color: 'var(--dor-ink)',
+            touchAction: 'manipulation',
+          }}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMode();
+          }}
+          onClick={(e) => {
+            // keyboard activation only — the tap already fired on pointerdown
+            if (e.detail === 0) toggleMode();
+          }}
+        >
+          <span aria-hidden>🔄</span>
+          <span aria-hidden>{modeCfg.toggleIcon}</span>
+          <span>{modeCfg.toggleLabel}</span>
+        </button>
       </div>
 
       {!showInstructions &&
@@ -383,13 +492,13 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
               else delete peopleRefs.current[p.uid];
             }}
             role="img"
-            aria-label="חבר"
+            aria-label={modeCfg.preyLabel}
             className="absolute flex touch-none items-end justify-center"
             style={{
-              width: PERSON_HALF * 2,
-              height: PERSON_HALF * 2 + 8,
-              left: p.x - PERSON_HALF,
-              top: p.y - PERSON_HALF,
+              width: PERSON_HALF * 2 * uiScale,
+              height: (PERSON_HALF * 2 + 8) * uiScale,
+              left: p.x - PERSON_HALF * uiScale,
+              top: p.y - PERSON_HALF * uiScale,
               zIndex: eatingUid === p.uid ? 30 : 8,
               pointerEvents: 'none',
             }}
@@ -409,19 +518,19 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
                 : { duration: 0.2 }
             }
           >
-            <PersonPuppet variant={p.variant} scale={1.15} />
+            <Prey variant={p.variant} scale={1.15 * uiScale} />
           </motion.div>
         ))}
 
       <motion.div
         role="application"
-        aria-label="מפלצת לגרירה"
+        aria-label={modeCfg.eaterLabel}
         className="mdc-monster-wrap absolute touch-none"
         style={{
-          width: MONSTER_W,
-          height: MONSTER_H,
-          left: monster.x - MONSTER_W / 2,
-          top: monster.y - MONSTER_H / 2,
+          width: MONSTER_W * uiScale,
+          height: MONSTER_H * uiScale,
+          left: monster.x - (MONSTER_W * uiScale) / 2,
+          top: monster.y - (MONSTER_H * uiScale) / 2,
           zIndex: 40,
           cursor: eatingUid || showCelebration ? 'default' : 'grab',
         }}
@@ -429,19 +538,19 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
         transition={{ type: 'spring', stiffness: 400, damping: 24 }}
         onPointerDown={handleMonsterDown}
       >
-        <MonsterIllustration
+        <Eater
           mouthPhase={mouthPhase}
           rejectKey={0}
-          className="pointer-events-none mx-auto block h-full w-full max-h-[min(200px,26svh)] object-contain drop-shadow-[0_18px_36px_rgba(49,46,129,0.42)]"
+          className="pointer-events-none mx-auto block h-full w-full object-contain drop-shadow-[0_18px_36px_rgba(49,46,129,0.42)]"
         />
         <div
           ref={mouthRef}
           className="pointer-events-none absolute rounded-[42%] border-2 border-dashed border-violet-600/30 bg-violet-200/25"
           style={{
-            left: `${MOUTH_INSET.leftPct}%`,
-            width: `${MOUTH_INSET.widthPct}%`,
-            top: `${MOUTH_INSET.topPct}%`,
-            height: `${MOUTH_INSET.heightPct}%`,
+            left: `${mouthInset.leftPct}%`,
+            width: `${mouthInset.widthPct}%`,
+            top: `${mouthInset.topPct}%`,
+            height: `${mouthInset.heightPct}%`,
           }}
           aria-hidden
         />
@@ -449,30 +558,33 @@ export default function MonsterDragChompGame({ onExit, soundManager, peopleCount
 
       {showInstructions && (
         <GameInstructionsOverlay
-          title="מפלצת מעל החברים"
+          title={modeCfg.title}
           buttonText="יאללה!"
           onStart={() => {
             const nx = window.innerWidth * 0.5;
             const ny = window.innerHeight * 0.26;
             monsterPosRef.current = { x: nx, y: ny };
-            setPeople(buildPeople(isLandscape, peopleCount));
+            setPeople(buildPeople(isLandscape, peopleCount, uiScale));
             setMonster({ x: nx, y: ny });
             setShowInstructions(false);
           }}
-          accentColor="#4f46e5"
+          accentColor="var(--game-accent)"
         >
-          <p className="m-0 mb-3">גררו את המפלצת כך שהפה מעל חבר אייקון.</p>
-          <p className="m-0 mb-3">כשהפה נוגע — המפלצת נושכת ואוכלת (בצחוק!).</p>
+          {modeCfg.lines.map((line) => (
+            <p key={line} className="m-0 mb-3">
+              {line}
+            </p>
+          ))}
           <p className="m-0">כשכולם נאכלו — ניצחון גדול!</p>
         </GameInstructionsOverlay>
       )}
 
       <GameCelebrationOverlay
         show={showCelebration}
-        successText="המפלצת שבעה! כל הכבוד! 🎉"
+        successText={modeCfg.success}
         subtitle="סיבוב חדש מתחיל מיד"
         photo={celebrationPhoto}
-        accentColor="#6366f1"
+        accentColor="var(--game-accent)"
         numberOfPieces={260}
       />
     </div>

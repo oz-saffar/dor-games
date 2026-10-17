@@ -5,6 +5,7 @@ import LoadingFallback from './components/LoadingFallback';
 import { useSoundManager } from './hooks/useSoundManager';
 import { GAME_COMPONENTS } from './lib/gameComponents';
 import { BACKGROUND_OPTIONS, DEFAULT_BACKGROUND_ID } from './lib/backgrounds';
+import { ALL_GAMES } from './lib/gamesConfig';
 import { getDefaultConfig, mergeConfigWithDefaults, CONFIG_STORAGE_KEY } from './lib/defaultConfig';
 import { normalizeRunnerDashCharacter } from './lib/runnerDashCharacter';
 
@@ -25,6 +26,12 @@ function App() {
       if (showConfig && e.target.closest?.('[data-config-modal]')) return;
       // Home hub scrolls so all game tiles are reachable; only allow when config is closed.
       if (!currentGame && !showConfig) return;
+      // A finger never holds perfectly still, so a plain tap on a control emits a
+      // touchmove; preventing its default makes iOS swallow the click that follows,
+      // and the tap has to be repeated (this is what made memory cards need several
+      // presses). Nothing can scroll behind a game anyway — body is position:fixed
+      // with touch-action:none — so controls are safe to leave alone.
+      if (e.target.closest?.('button, [role="button"], a, input, select, textarea, [data-tap-target]')) return;
       e.preventDefault();
     };
     const noMenu = (e) => e.preventDefault();
@@ -64,7 +71,7 @@ function App() {
     document.documentElement.dataset.theme = mode;
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      meta.setAttribute('content', mode === 'twilight' ? '#121a24' : '#f4efe6');
+      meta.setAttribute('content', mode === 'twilight' ? '#211e1b' : '#f9f5ee');
     }
   }, [config.themeMode]);
 
@@ -110,6 +117,16 @@ function App() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    const accent = ALL_GAMES.find((g) => g.id === currentGame)?.accent;
+    const html = document.documentElement;
+    if (accent) {
+      html.style.setProperty('--game-accent', accent);
+    } else {
+      html.style.removeProperty('--game-accent');
+    }
+  }, [currentGame]);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -194,11 +211,23 @@ function App() {
               runnerCharacter: config.runnerDashCharacter,
               onRunnerCharacterChange: handleRunnerDashCharacterChange,
             }),
-            ...(currentGame === 'football' && {
-              difficulty: config.footballDifficulty,
+            ...(currentGame === 'dino-sneak' && {
+              difficulty: config.dinoSneakDifficulty,
             }),
-            ...(currentGame === 'football-drag' && {
-              difficulty: config.footballDragDifficulty,
+            ...(currentGame === 'dino-stomp' && {
+              difficulty: config.dinoStompDifficulty,
+            }),
+            ...(currentGame === 'web-sling' && {
+              difficulty: config.webSlingDifficulty,
+            }),
+            ...(currentGame === 'snake-garden' && {
+              difficulty: config.snakeGardenDifficulty,
+            }),
+            ...(currentGame === 'room-tidy' && {
+              difficulty: config.roomTidyDifficulty,
+            }),
+            ...(currentGame === 'photo-puzzle' && {
+              pieceCount: config.photoPuzzlePieces,
             }),
           })}
         </Suspense>

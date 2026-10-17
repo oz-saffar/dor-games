@@ -1,0 +1,27 @@
+{
+  "spidey": {
+    "w": 284,
+    "h": 460,
+    "src": "/assets/characters/spidey.png"
+  },
+  "ghost-spider": {
+    "w": 175,
+    "h": 460,
+    "src": "/assets/characters/ghost-spider.png"
+  },
+  "spin": {
+    "w": 197,
+    "h": 460,
+    "src": "/assets/characters/spin.png"
+  },
+  "rhino": {
+    "w": 452,
+    "h": 460,
+    "src": "/assets/characters/rhino.png"
+  },
+  "goblin": {
+    "w": 290,
+    "h": 460,
+    "src": "/assets/characters/goblin.png"
+  }
+}

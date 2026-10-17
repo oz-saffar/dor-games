@@ -2,66 +2,131 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Design tokens (Warm premium playroom) ───────────────── */
+/* ─── Design tokens (Warm Paper & Clay — soft Montessori) ─── */
 :root {
-  --dor-parchment: #f4efe6;
-  --dor-mist: #e4ecf5;
-  --dor-shell-start: #f6f1e8;
-  --dor-shell-end: #e3eef8;
-  --dor-ink: #1a2332;
-  --dor-ink-muted: #5c6578;
-  --dor-ink-subtle: #8b95a8;
-  --dor-ember: #c94c3b;
-  --dor-ember-dark: #a63d30;
-  --dor-teal: #2a5f62;
+  /* Surfaces */
+  --dor-parchment: #f7f3ec;
+  --dor-mist: #efe9de;
+  --dor-shell-start: #f9f5ee;
+  --dor-shell-end: #f0eadf;
   --dor-panel: #fffdf8;
   --dor-panel-elevated: #ffffff;
-  --dor-glass: rgba(255, 253, 248, 0.82);
-  --dor-border: rgba(26, 35, 50, 0.1);
-  --dor-border-strong: rgba(26, 35, 50, 0.16);
-  --dor-shadow-sm: 0 2px 8px rgba(26, 35, 50, 0.06);
-  --dor-shadow-card: 0 4px 0 rgba(26, 35, 50, 0.06), 0 8px 32px rgba(26, 35, 50, 0.08);
-  --dor-shadow-card-hover: 0 6px 0 rgba(26, 35, 50, 0.05), 0 14px 40px rgba(26, 35, 50, 0.12);
-  --dor-radius-sm: 12px;
-  --dor-radius-md: 16px;
-  --dor-radius-lg: 22px;
-  --dor-radius-xl: 28px;
-  --dor-focus: #c94c3b;
-  --dor-gold: #c9a227;
-  --dor-gold-bright: #e8cf6a;
-  --dor-glow-ember: rgba(201, 76, 59, 0.42);
-  --dor-glow-teal: rgba(42, 95, 98, 0.35);
-  --dor-tile-face-top: rgba(255, 255, 255, 0.98);
-  --dor-tile-face-bottom: #dde8f5;
-  --dor-tile-shine: rgba(255, 255, 255, 0.55);
-  --dor-hub-vignette: rgba(12, 18, 32, 0.14);
+  --dor-glass: rgba(255, 253, 248, 0.92);
+
+  /* Ink — warm charcoal, never blue-black */
+  --dor-ink: #3a3630;
+  --dor-ink-muted: #7a7266;
+  --dor-ink-subtle: #a79d8e;
+
+  /* Brand */
+  --dor-ember: #c97b5a;
+  --dor-ember-dark: #a55f42;
+  --dor-teal: #6e8b6e;
+  --dor-gold: #d9a441;
+  --dor-gold-bright: #e8c27a;
+  --dor-focus: #a55f42;
+
+  /* Nature accent scale — mirrored in src/lib/palette.js */
+  --dor-sage: #8fa98a;
+  --dor-terracotta: #c97b5a;
+  --dor-ochre: #d9a441;
+  --dor-sky: #7e9bb5;
+  --dor-clay: #c08b8b;
+  --dor-moss: #6e8b6e;
+  --dor-plum: #9887a8;
+  --dor-sand: #c9b08a;
+
+  /* Borders */
+  --dor-border: #e6ded1;
+  --dor-border-strong: #d6cbb9;
+
+  /* Depth — soft warm paper, no glow */
+  --dor-shadow-sm: 0 1px 2px rgba(74, 62, 46, 0.05), 0 2px 6px rgba(74, 62, 46, 0.05);
+  --dor-shadow-card: 0 1px 2px rgba(74, 62, 46, 0.05), 0 6px 18px -6px rgba(74, 62, 46, 0.14);
+  --dor-shadow-card-hover: 0 2px 4px rgba(74, 62, 46, 0.06), 0 14px 30px -8px rgba(74, 62, 46, 0.2);
+  /* The wooden-tile bottom edge */
+  --dor-lip: rgba(74, 62, 46, 0.14);
+
+  /* Shape */
+  --dor-radius-sm: 14px;
+  --dor-radius-md: 18px;
+  --dor-radius-lg: 24px;
+  --dor-radius-xl: 32px;
+
+  /* Home tiles */
+  --dor-tile-face-top: #fffdf8;
+  --dor-tile-face-bottom: #f6f0e5;
+  --dor-tile-shine: rgba(255, 255, 255, 0.6);
+  --dor-hub-vignette: rgba(90, 76, 56, 0.07);
+
+  /* Per-game theming — App.jsx sets --game-accent when a game mounts */
+  --game-accent: var(--dor-terracotta);
+  --game-ink: var(--dor-ink);
+  --game-paper: #fffdf8;
+  --game-surface: linear-gradient(
+    168deg,
+    var(--game-paper) 0%,
+    color-mix(in srgb, var(--game-accent) 12%, var(--game-paper)) 45%,
+    color-mix(in srgb, var(--game-accent) 22%, var(--game-paper)) 100%
+  );
+  --game-card: color-mix(in srgb, var(--game-accent) 5%, var(--game-paper));
+  --game-card-strong: color-mix(in srgb, var(--game-accent) 14%, var(--game-paper));
+  --game-edge: color-mix(in srgb, var(--game-accent) 30%, var(--game-paper));
+
   --dor-z-chrome: 100;
   --dor-z-overlay: 200;
   --dor-z-modal: 300;
-  --font-display: 'Secular One', 'Rubik', Arial, sans-serif;
+  --font-display: 'Varela Round', 'Rubik', Arial, sans-serif;
   --font-ui: 'Rubik', Arial, sans-serif;
 }
 
 [data-theme='twilight'] {
-  --dor-parchment: #0f1419;
-  --dor-mist: #161d27;
-  --dor-shell-start: #121a24;
-  --dor-shell-end: #1a2633;
-  --dor-ink: #f2ebe3;
-  --dor-ink-muted: #b8c0cc;
-  --dor-ink-subtle: #7a8494;
-  --dor-panel: #1e2836;
-  --dor-panel-elevated: #252f3f;
-  --dor-glass: rgba(30, 40, 54, 0.92);
-  --dor-border: rgba(242, 235, 227, 0.1);
-  --dor-border-strong: rgba(242, 235, 227, 0.16);
-  --dor-shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.35);
-  --dor-shadow-card: 0 4px 0 rgba(0, 0, 0, 0.2), 0 12px 40px rgba(0, 0, 0, 0.45);
-  --dor-shadow-card-hover: 0 6px 0 rgba(0, 0, 0, 0.25), 0 16px 48px rgba(0, 0, 0, 0.5);
-  --dor-tile-face-top: rgba(44, 54, 70, 0.94);
-  --dor-tile-face-bottom: rgba(18, 26, 36, 0.98);
-  --dor-tile-shine: rgba(255, 255, 255, 0.07);
-  --dor-hub-vignette: rgba(0, 0, 0, 0.42);
+  --dor-parchment: #221f1c;
+  --dor-mist: #2a2622;
+  --dor-shell-start: #211e1b;
+  --dor-shell-end: #2a2521;
+  --dor-panel: #2e2a26;
+  --dor-panel-elevated: #38332e;
+  --dor-glass: rgba(46, 42, 38, 0.92);
+
+  --dor-ink: #ede5d8;
+  --dor-ink-muted: #b3a996;
+  --dor-ink-subtle: #8a8071;
+
+  --dor-ember: #d98f6e;
+  --dor-ember-dark: #a55f42;
+  --dor-teal: #86a186;
+  --dor-gold: #e3b45c;
+  --dor-gold-bright: #f0d094;
+  --dor-focus: #d98f6e;
+
+  /* Accents lifted so they still separate against a dark ground */
+  --dor-sage: #a3bc9e;
+  --dor-terracotta: #d98f6e;
+  --dor-ochre: #e3b45c;
+  --dor-sky: #94afc7;
+  --dor-clay: #d2a0a0;
+  --dor-moss: #86a186;
+  --dor-plum: #ac9cbc;
+  --dor-sand: #d8c09e;
+
+  --dor-border: #443e37;
+  --dor-border-strong: #565046;
+
+  --dor-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --dor-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 22px -8px rgba(0, 0, 0, 0.5);
+  --dor-shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.3), 0 16px 34px -10px rgba(0, 0, 0, 0.6);
+  --dor-lip: rgba(0, 0, 0, 0.32);
+
+  --dor-tile-face-top: #38332e;
+  --dor-tile-face-bottom: #2a2622;
+  --dor-tile-shine: rgba(255, 255, 255, 0.06);
+  --dor-hub-vignette: rgba(0, 0, 0, 0.34);
+
+  --game-paper: #221f1c;
+  --game-card: color-mix(in srgb, var(--game-accent) 12%, #2e2a26);
+  --game-card-strong: color-mix(in srgb, var(--game-accent) 24%, #2e2a26);
+  --game-edge: color-mix(in srgb, var(--game-accent) 42%, #2e2a26);
 }
 
 /* ─── Reset ─────────────────────────────────────────── */
@@ -134,45 +199,38 @@ html.dor-hub-scroll body {
   touch-action: pan-y !important;
 }
 
-/* Shell grain overlay — pointer-events none, sits above .app-bg */
+/* Shell grain overlay — pointer-events none, sits above .app-bg.
+   Carries the "paper" of the design language, so it does real work now. */
 .dor-grain {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.045;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 [data-theme='twilight'] .dor-grain {
-  opacity: 0.08;
+  opacity: 0.07;
 }
 
-/* Hub: slow drifting light pools (premium launcher feel) */
-@keyframes dor-aurora-drift {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    transform: translate(-4%, 3%) scale(1.06);
-  }
-}
-
+/* Hub: a single, still warm light pool. Replaces the old drifting aurora — the
+   design language reads as paper under lamplight, not as neon. */
 .dor-hub-aurora {
   position: fixed;
-  inset: -35%;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.9;
-  background:
-    radial-gradient(ellipse 72% 58% at 18% 22%, var(--dor-glow-ember), transparent 52%),
-    radial-gradient(ellipse 68% 52% at 88% 76%, var(--dor-glow-teal), transparent 50%),
-    radial-gradient(ellipse 50% 42% at 52% 108%, rgba(201, 162, 39, 0.22), transparent 58%);
-  animation: dor-aurora-drift 24s ease-in-out infinite alternate;
+  background: radial-gradient(
+    ellipse 90% 60% at 50% 0%,
+    color-mix(in srgb, var(--dor-gold) 12%, transparent),
+    transparent 62%
+  );
 }
 
+/* Kept as a no-op so MainMenu's reduced-motion branch stays valid */
 .dor-hub-aurora--static {
-  animation: none;
+  background: none;
 }
 
 .dor-hub-vignette {
@@ -180,37 +238,28 @@ html.dor-hub-scroll body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(ellipse 88% 78% at 50% 42%, transparent 0%, var(--dor-hub-vignette) 100%);
+  background: radial-gradient(ellipse 92% 82% at 50% 42%, transparent 0%, var(--dor-hub-vignette) 100%);
 }
 
-/* Modal / card rim helper: gradient ring */
+/* Card rim: a plain warm hairline. Replaces the old four-colour gradient ring. */
 .dor-modal-rim {
-  padding: 2px;
+  padding: 1px;
   border-radius: var(--dor-radius-xl);
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.55) 0%,
-    var(--dor-ember) 38%,
-    var(--dor-teal) 72%,
-    var(--dor-gold-bright) 100%
-  );
-  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.28);
+  background: var(--dor-border);
+  box-shadow: var(--dor-shadow-card-hover);
 }
 
 [data-theme='twilight'] .dor-modal-rim {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    var(--dor-ember) 40%,
-    var(--dor-teal) 100%
-  );
+  background: var(--dor-border-strong);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .dor-hub-aurora {
-    animation: none;
-    transform: none;
-  }
+/* Wooden-tile bottom edge — the tactile cue of the whole system */
+.dor-lip {
+  box-shadow: 0 3px 0 var(--dor-lip), var(--dor-shadow-card);
+}
+
+.dor-lip-sm {
+  box-shadow: 0 2px 0 var(--dor-lip), var(--dor-shadow-sm);
 }
 
 .safe-area-padding {

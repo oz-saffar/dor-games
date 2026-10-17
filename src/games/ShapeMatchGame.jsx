@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -13,18 +13,20 @@ import {
  * Teaches: עיגול, ריבוע, משולש, כוכב, לב, מלבן, מעוין, סהר
  */
 const SHAPES = [
-  { id: 'circle', name: 'עיגול', color: '#E62429', render: () => <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#E62429', border: '4px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} /> },
-  { id: 'square', name: 'ריבוע', color: '#2B3B96', render: () => <div style={{ width: 56, height: 56, background: '#2B3B96', border: '4px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} /> },
-  { id: 'triangle', name: 'משולש', color: '#16A34A', render: () => <div style={{ width: 0, height: 0, borderLeft: '32px solid transparent', borderRight: '32px solid transparent', borderBottom: '56px solid #16A34A', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }} /> },
-  { id: 'star', name: 'כוכב', color: '#F59E0B', render: () => <span style={{ fontSize: 52, lineHeight: 1 }}>⭐</span> },
-  { id: 'heart', name: 'לב', color: '#EC4899', render: () => <span style={{ fontSize: 52, lineHeight: 1 }}>❤️</span> },
-  { id: 'rectangle', name: 'מלבן', color: '#0EA5E9', render: () => <div style={{ width: 70, height: 44, background: '#0EA5E9', border: '4px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} /> },
-  { id: 'diamond', name: 'מעוין', color: '#8B5CF6', render: () => <div style={{ width: 48, height: 48, background: '#8B5CF6', border: '4px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', transform: 'rotate(45deg)' }} /> },
-  { id: 'crescent', name: 'סהר', color: '#FBBF24', render: () => <span style={{ fontSize: 52, lineHeight: 1 }}>🌙</span> },
+  { id: 'circle', name: 'עיגול', color: '#C4614B', render: () => <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#C4614B', border: '3px solid rgba(74,62,46,0.14)', boxShadow: 'var(--dor-shadow-sm)' }} /> },
+  { id: 'square', name: 'ריבוע', color: '#6A8FBA', render: () => <div style={{ width: 56, height: 56, background: '#6A8FBA', border: '3px solid rgba(74,62,46,0.14)', boxShadow: 'var(--dor-shadow-sm)' }} /> },
+  { id: 'triangle', name: 'משולש', color: '#6E9A63', render: () => <div style={{ width: 0, height: 0, borderLeft: '32px solid transparent', borderRight: '32px solid transparent', borderBottom: '56px solid #6E9A63', filter: 'drop-shadow(0 2px 3px rgba(74,62,46,0.18))' }} /> },
+  { id: 'star', name: 'כוכב', color: '#D9B441', render: () => <span style={{ fontSize: 52, lineHeight: 1 }}>⭐</span> },
+  { id: 'heart', name: 'לב', color: '#C57F9B', render: () => <span style={{ fontSize: 52, lineHeight: 1 }}>❤️</span> },
+  { id: 'rectangle', name: 'מלבן', color: '#5B9A96', render: () => <div style={{ width: 70, height: 44, background: '#5B9A96', border: '3px solid rgba(74,62,46,0.14)', boxShadow: 'var(--dor-shadow-sm)' }} /> },
+  { id: 'diamond', name: 'מעוין', color: '#9179AE', render: () => <div style={{ width: 48, height: 48, background: '#9179AE', border: '3px solid rgba(74,62,46,0.14)', boxShadow: 'var(--dor-shadow-sm)', transform: 'rotate(45deg)' }} /> },
+  { id: 'crescent', name: 'סהר', color: '#D98A45', render: () => <span style={{ fontSize: 52, lineHeight: 1 }}>🌙</span> },
 ];
 
 const ShapeMatchGame = ({ onExit, soundManager }) => {
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [showInstructions, setShowInstructions] = useState(true);
   const [targetShape, setTargetShape] = useState(null);
   const [score, setScore] = useState(0);
@@ -81,7 +83,7 @@ const ShapeMatchGame = ({ onExit, soundManager }) => {
       width: '100vw',
       height: '100vh',
       minHeight: '-webkit-fill-available',
-      background: 'linear-gradient(145deg, #5b21b6 0%, #7c3aed 50%, #c4b5fd 100%)',
+      background: 'var(--game-surface)',
       position: 'fixed',
       overflow: 'hidden',
       display: 'flex',
@@ -91,7 +93,7 @@ const ShapeMatchGame = ({ onExit, soundManager }) => {
       padding: '20px',
     }}>
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="⭐" score={score} accentColor="#7C3AED" />
+      <GameScoreBadge icon="⭐" score={score} accentColor="var(--game-accent)" />
 
       {!showInstructions && targetShape && (
         <div style={{
@@ -104,13 +106,13 @@ const ShapeMatchGame = ({ onExit, soundManager }) => {
           maxWidth: isLandscape ? '95vw' : 500,
           width: '100%',
         }}>
-          <h2 style={{ fontSize: 'clamp(26px, 5vw, 40px)', fontFamily: 'var(--font-display)', fontWeight: 400, color: 'white', margin: 0, textShadow: '0 2px 12px rgba(0,0,0,0.25)' }}>
+          <h2 style={{ fontSize: 'clamp(26px, 5vw, 40px)', fontFamily: 'var(--font-display)', fontWeight: 400, color: 'var(--dor-ink)', margin: 0 }}>
             שמע את שם הצורה - איזו צורה זה?
           </h2>
           <button
             onClick={() => speakShapeName(targetShape)}
             style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--dor-panel)',
               border: 'none',
               borderRadius: '50%',
               width: 'clamp(90px, 22vw, 120px)',
@@ -125,24 +127,24 @@ const ShapeMatchGame = ({ onExit, soundManager }) => {
           >
             🔈
           </button>
-          <p style={{ fontSize: 'clamp(14px, 3.5vw, 18px)', color: 'rgba(255,255,255,0.9)', margin: 0 }}>לחץ שוב להאזנה</p>
+          <p style={{ fontSize: 'clamp(14px, 3.5vw, 18px)', color: 'var(--dor-ink-muted)', margin: 0 }}>לחץ שוב להאזנה</p>
           <div style={{
             display: 'grid',
             gridTemplateColumns: isLandscape ? 'repeat(6, 1fr)' : 'repeat(3, 1fr)',
             gap: isLandscape ? 10 : 12,
             width: '100%',
-            maxWidth: isLandscape ? 500 : 400,
+            maxWidth: isLandscape ? (isTablet ? 900 : 500) : 400,
           }}>
             {targetShape.options.map((opt) => (
               <button
                 key={opt.id}
                 onClick={() => handleShapeSelect(opt)}
                 style={{
-                  backgroundColor: 'white',
-                  border: '4px solid rgba(255,255,255,0.8)',
+                  backgroundColor: 'var(--dor-panel)',
+                  border: '1px solid var(--dor-border)',
                   borderRadius: '16px',
                   padding: '16px',
-                  minHeight: isLandscape ? 70 : 100,
+                  minHeight: isLandscape ? (isTablet ? 140 : 70) : 100,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -176,7 +178,7 @@ const ShapeMatchGame = ({ onExit, soundManager }) => {
             }
             setShowInstructions(false);
           }}
-          accentColor="#7C3AED"
+          accentColor="var(--game-accent)"
         >
           <p>🔊 <strong>שמע את שם הצורה בעברית!</strong></p>
           <p>👆 <strong>לחץ על הצורה הנכונה!</strong></p>
@@ -188,7 +190,7 @@ const ShapeMatchGame = ({ onExit, soundManager }) => {
         show={showCelebration}
         successText="כל הכבוד! 🎉"
         photo={celebrationPhoto}
-        accentColor="#16A34A"
+        accentColor="var(--game-accent)"
         numberOfPieces={200}
       />
     </div>

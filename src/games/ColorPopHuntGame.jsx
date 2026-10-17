@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useDorPhotos } from '../hooks/useDorPhotos';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -8,15 +9,15 @@ import {
   GameCelebrationOverlay,
 } from '../components/game';
 
-const ACCENT = '#c026d3';
+const ACCENT = 'var(--game-accent)';
 
 const COLOR_DEFS = [
-  { key: 'red', hex: '#EF4444', label: 'אדום' },
-  { key: 'orange', hex: '#F97316', label: 'כתום' },
-  { key: 'yellow', hex: '#EAB308', label: 'צהוב' },
-  { key: 'green', hex: '#22C55E', label: 'ירוק' },
-  { key: 'blue', hex: '#3B82F6', label: 'כחול' },
-  { key: 'purple', hex: '#A855F7', label: 'סגול' },
+  { key: 'red', hex: '#C4614B', label: 'אדום' },
+  { key: 'orange', hex: '#D98A45', label: 'כתום' },
+  { key: 'yellow', hex: '#D9B441', label: 'צהוב' },
+  { key: 'green', hex: '#6E9A63', label: 'ירוק' },
+  { key: 'blue', hex: '#6A8FBA', label: 'כחול' },
+  { key: 'purple', hex: '#9179AE', label: 'סגול' },
 ];
 
 const SLOT_POSITIONS = [
@@ -83,6 +84,9 @@ function buildRound(score) {
  * מסיבת נקודות — לוחצים רק על הבועות בצבע המטרה (בלי גרירה)
  */
 export default function ColorPopHuntGame({ onExit, soundManager }) {
+  const { isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const reduceMotion = useReducedMotion();
   const [showInstructions, setShowInstructions] = useState(true);
   const [score, setScore] = useState(0);
@@ -145,7 +149,7 @@ export default function ColorPopHuntGame({ onExit, soundManager }) {
         position: 'fixed',
         inset: 0,
         overflow: 'hidden',
-        background: 'radial-gradient(ellipse 100% 90% at 50% 10%, #fce7f3 0%, #f9a8d4 45%, #db2777 100%)',
+        background: 'var(--game-surface)',
       }}
     >
       <GameBackButton onExit={onExit} />
@@ -173,7 +177,7 @@ export default function ColorPopHuntGame({ onExit, soundManager }) {
                 margin: 0,
                 fontSize: 22,
                 fontWeight: 800,
-                color: '#831843',
+                color: 'var(--dor-ink)',
                 textShadow: '0 1px 0 rgba(255,255,255,0.5)',
               }}
             >
@@ -205,7 +209,7 @@ export default function ColorPopHuntGame({ onExit, soundManager }) {
                   fontSize: 'clamp(26px, 7vw, 36px)',
                   fontFamily: 'var(--font-display)',
                   fontWeight: 700,
-                  color: '#500724',
+                  color: 'var(--dor-ink)',
                 }}
               >
                 {round.targetLabel}
@@ -217,7 +221,7 @@ export default function ColorPopHuntGame({ onExit, soundManager }) {
             style={{
               position: 'relative',
               width: '100%',
-              maxWidth: 520,
+              maxWidth: isTablet ? 900 : 520,
               height: 'min(58vh, 420px)',
               margin: '0 auto',
               borderRadius: 28,
@@ -259,14 +263,14 @@ export default function ColorPopHuntGame({ onExit, soundManager }) {
                     left: `${blob.leftPct}%`,
                     top: `${blob.topPct}%`,
                     transform: 'translate(-50%, -50%)',
-                    width: 'clamp(52px, 16vw, 76px)',
-                    height: 'clamp(52px, 16vw, 76px)',
+                    width: isTablet ? 'clamp(52px, 16vw, 118px)' : 'clamp(52px, 16vw, 76px)',
+                    height: isTablet ? 'clamp(52px, 16vw, 118px)' : 'clamp(52px, 16vw, 76px)',
                     borderRadius: '50%',
                     border: 'none',
                     cursor: 'pointer',
                     touchAction: 'manipulation',
                     WebkitTapHighlightColor: 'transparent',
-                    background: `radial-gradient(circle at 30% 28%, #ffffffaa 0%, ${def.hex} 42%, ${def.hex}dd 100%)`,
+                    background: `radial-gradient(circle at 30% 28%, #ffffffcc 0%, ${def.hex} 45%, ${def.hex} 100%)`,
                     boxShadow: `0 10px 22px rgba(0,0,0,0.2), inset 0 -6px 14px rgba(0,0,0,0.12)`,
                   }}
                 />
@@ -280,7 +284,7 @@ export default function ColorPopHuntGame({ onExit, soundManager }) {
               marginTop: 14,
               fontSize: 17,
               fontWeight: 700,
-              color: '#9d174d',
+              color: 'var(--dor-ink-muted)',
             }}
           >
             כל הבועות הנכונות נעלמות — ואז סיבוב חדש!

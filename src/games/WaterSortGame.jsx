@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
+import { useViewport } from '../hooks/useViewport';
 import { GAME_DIFFICULTY } from '../lib/gameDifficulties';
 import {
   GameBackButton,
@@ -11,16 +12,16 @@ import {
 const TUBE_CAPACITY = 4;
 /** סדר ראשון — נשמר לרמות קל/בינוני/קשה כמו קודם; אחר כך צבעים נוספים לרמות מתקדמות */
 const PALETTE = [
-  '#EF4444',
-  '#F59E0B',
-  '#3B82F6',
-  '#10B981',
-  '#A855F7',
-  '#EC4899',
-  '#06B6D4',
-  '#84CC16',
-  '#EAB308',
-  '#14B8A6',
+  '#C4614B',
+  '#D98A45',
+  '#6A8FBA',
+  '#6E9A63',
+  '#9179AE',
+  '#C57F9B',
+  '#5B9A96',
+  '#8FA98A',
+  '#D9B441',
+  '#7E9BB5',
 ];
 
 const DIFFICULTY_CONFIG = {
@@ -100,6 +101,9 @@ const createLevel = (difficulty) => {
 };
 
 export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY }) {
+  const { height: vh, isTablet } = useViewport();
+  // Taller tubes on a tablet, but never taller than the space they sit in.
+  const tubeHeight = isTablet ? Math.max(250, Math.min(380, Math.round(vh * 0.5))) : 250;
   const [showInstructions, setShowInstructions] = useState(true);
   const [score, setScore] = useState(0);
   const [selectedTube, setSelectedTube] = useState(null);
@@ -210,11 +214,11 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
         position: 'fixed',
         inset: 0,
         overflow: 'hidden',
-        background: 'radial-gradient(ellipse 120% 80% at 50% 0%, #e0f2fe 0%, #99d9f5 40%, #38bdf8 100%)',
+        background: 'var(--game-surface)',
       }}
     >
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="🧪" score={score} accentColor="#0E7490" />
+      <GameScoreBadge icon="🧪" score={score} accentColor="var(--game-accent)" />
 
       {!showInstructions && (
         <>
@@ -228,11 +232,16 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
               padding: '14px 10px 24px',
+              display: 'flex',
             }}
           >
+            {/* Single flex child centred with margin:auto — it sits in the middle
+                of the iPad's screen when it fits and still scrolls from the top
+                when it does not, which justify-content would clip. */}
+            <div style={{ margin: 'auto', width: 'min(820px, 100%)' }}>
             <div
               style={{
-                width: 'min(820px, 100%)',
+                width: '100%',
                 margin: '0 auto',
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(84px, 1fr))',
@@ -254,14 +263,14 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
                     onClick={() => tryMove(index)}
                     style={{
                       border: selected
-                        ? '4px solid #1D4ED8'
+                        ? '4px solid var(--game-accent)'
                         : legal
-                          ? '4px solid #16A34A'
+                          ? '4px solid var(--dor-moss)'
                           : '3px solid rgba(14,116,144,0.38)',
                       borderTop: '8px solid rgba(255,255,255,0.95)',
                       borderRadius: '20px 20px 30px 30px',
-                      height: 250,
-                      background: 'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.76) 100%)',
+                      height: tubeHeight,
+                      background: 'var(--dor-panel)',
                       overflow: 'hidden',
                       boxShadow: selected
                         ? '0 10px 22px rgba(29,78,216,0.3)'
@@ -280,7 +289,7 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
                         top: 24,
                         borderRadius: '10px 10px 20px 20px',
                         overflow: 'hidden',
-                        background: 'linear-gradient(180deg, rgba(226,232,240,0.7) 0%, rgba(241,245,249,0.85) 100%)',
+                        background: 'var(--dor-mist)',
                       }}
                     >
                       {Array.from({ length: TUBE_CAPACITY }).map((_, layerIndex) => {
@@ -315,7 +324,7 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
               })}
             </div>
 
-            <div style={{ width: 'min(820px, 100%)', margin: '16px auto 0', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '100%', margin: '16px auto 0', display: 'flex', justifyContent: 'center' }}>
               <button
                 onClick={startLevel}
                 style={{
@@ -324,13 +333,14 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
                   padding: '10px 16px',
                   fontSize: 18,
                   fontWeight: 900,
-                  color: '#0F172A',
+                  color: 'var(--dor-ink)',
                   background: 'rgba(255,255,255,0.95)',
                   boxShadow: '0 6px 14px rgba(0,0,0,0.18)',
                 }}
               >
                 סבב חדש 🔄
               </button>
+            </div>
             </div>
           </div>
         </>
@@ -360,7 +370,7 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
           title="מיון צבעים! 🧪"
           buttonText="נתחיל למיין! 💧"
           onStart={() => setShowInstructions(false)}
-          accentColor="#0E7490"
+          accentColor="var(--game-accent)"
         >
           <p>👆 בוחרים מבחנה ואז מבחנה אחרת לשפיכה.</p>
           <p>🔝 נשפך רק הצבע העליון, ונשפך לראש המבחנה החדשה (LIFO).</p>
@@ -372,7 +382,7 @@ export default function WaterSortGame({ onExit, soundManager, difficulty = GAME_
         show={showCelebration}
         successText="נהדר! מיינת את כל הצבעים! 🎉"
         photo={celebrationPhoto}
-        accentColor="#0E7490"
+        accentColor="var(--game-accent)"
         numberOfPieces={170}
       />
     </div>

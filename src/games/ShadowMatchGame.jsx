@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -8,7 +9,7 @@ import {
 } from '../components/game';
 import { GAME_DIFFICULTY } from '../lib/gameDifficulties';
 
-const ACCENT = '#0e7490';
+const ACCENT = 'var(--game-accent)';
 
 const SHADOW_GROUPS = [
   ['🐶', '🐺', '🦊', '🐱', '🐭'],
@@ -29,6 +30,9 @@ const shuffle = (items) => [...items].sort(() => Math.random() - 0.5);
 const flattenPool = SHADOW_GROUPS.flat();
 
 const ShadowMatchGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EASY }) => {
+  const { isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [showInstructions, setShowInstructions] = useState(true);
   const [score, setScore] = useState(0);
   const [challenge, setChallenge] = useState(null);
@@ -81,7 +85,7 @@ const ShadowMatchGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EA
       className="fixed flex h-[100dvh] w-screen items-center justify-center overflow-hidden p-4"
       style={{
         minHeight: '-webkit-fill-available',
-        background: 'linear-gradient(155deg, #0c4a6e 0%, #38bdf8 55%, #7dd3fc 100%)',
+        background: 'var(--game-surface)',
       }}
     >
       <GameBackButton onExit={onExit} />
@@ -90,20 +94,19 @@ const ShadowMatchGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EA
       {!showInstructions && challenge && (
         <div className="flex w-full max-w-[720px] flex-col items-center gap-5">
           <h2
-            className="font-display m-0 text-center text-white"
+            className="font-display m-0 text-center text-dor-ink"
             style={{
               fontSize: 'clamp(26px, 6vw, 42px)',
-              textShadow: '0 2px 12px rgba(0,0,0,0.25)',
             }}
           >
             מצא את הציור שמתאים לצל
           </h2>
 
           <div
-            className="flex min-h-[160px] w-full items-center justify-center rounded-dor-xl border border-white/30 bg-white/95 shadow-dor-card"
-            style={{ boxShadow: '0 12px 40px rgba(0,0,0,0.15), inset 0 1px 0 #fff' }}
+            className="flex min-h-[160px] w-full items-center justify-center rounded-dor-xl border border-dor-border bg-dor-panel shadow-dor-lip"
+            
           >
-            <span className="text-[clamp(80px,17vw,130px)] brightness-0">{challenge.target}</span>
+            <span className={`brightness-0 ${isTablet ? 'text-[clamp(80px,17vw,220px)]' : 'text-[clamp(80px,17vw,130px)]'}`}>{challenge.target}</span>
           </div>
 
           <div
@@ -117,8 +120,8 @@ const ShadowMatchGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EA
                 key={`${challenge.target}-${option}`}
                 type="button"
                 onClick={() => handleSelect(option)}
-                className="min-h-[88px] cursor-pointer rounded-dor-lg border-[3px] border-cyan-800/15 bg-white text-[clamp(40px,9vw,58px)] shadow-dor-sm active:scale-[0.98]"
-                style={{ boxShadow: 'var(--dor-shadow-card), inset 0 1px 0 #fff' }}
+                className={`cursor-pointer rounded-dor-lg border border-dor-border bg-dor-panel active:scale-[0.98] ${isTablet ? 'min-h-[170px] text-[clamp(40px,9vw,104px)]' : 'min-h-[88px] text-[clamp(40px,9vw,58px)]'}`}
+                style={{ boxShadow: '0 3px 0 var(--dor-lip), var(--dor-shadow-card)' }}
               >
                 {option}
               </button>
@@ -144,7 +147,7 @@ const ShadowMatchGame = ({ onExit, soundManager, difficulty = GAME_DIFFICULTY.EA
         show={showCelebration}
         successText="כל הכבוד! 🎉"
         photo={celebrationPhoto}
-        accentColor="#15803d"
+        accentColor="var(--game-accent)"
         numberOfPieces={200}
       />
     </div>

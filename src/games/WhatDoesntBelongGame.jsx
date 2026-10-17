@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDorPhotos } from '../hooks/useDorPhotos';
-import { useIsLandscape } from '../hooks/useOrientation';
+import { useViewport } from '../hooks/useViewport';
 import {
   GameBackButton,
   GameScoreBadge,
@@ -22,7 +22,9 @@ const CATEGORIES = [
 ];
 
 const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
-  const isLandscape = useIsLandscape();
+  const { isLandscape, isTablet } = useViewport();
+  // isTablet lifts the ceilings for Dor's iPad; every phone value is untouched.
+
   const [showInstructions, setShowInstructions] = useState(true);
   const [challenge, setChallenge] = useState(null);
   const [score, setScore] = useState(0);
@@ -69,7 +71,7 @@ const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
       width: '100vw',
       height: '100vh',
       minHeight: '-webkit-fill-available',
-      background: 'linear-gradient(145deg, #0e7490 0%, #06b6d4 50%, #67e8f9 100%)',
+      background: 'var(--game-surface)',
       position: 'fixed',
       overflow: 'auto',
       display: 'flex',
@@ -79,7 +81,7 @@ const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
       padding: '20px',
     }}>
       <GameBackButton onExit={onExit} />
-      <GameScoreBadge icon="⭐" score={score} accentColor="#0891B2" />
+      <GameScoreBadge icon="⭐" score={score} accentColor="var(--game-accent)" />
 
       {!showInstructions && challenge && (
         <div style={{
@@ -91,7 +93,7 @@ const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
           width: '100%',
           paddingTop: isLandscape ? 0 : 'calc(56px + env(safe-area-inset-top))',
         }}>
-          <h2 style={{ fontSize: 'clamp(26px, 5vw, 40px)', fontFamily: 'var(--font-display)', fontWeight: 400, color: 'white', margin: 0, textShadow: '0 2px 12px rgba(0,0,0,0.25)' }}>
+          <h2 style={{ fontSize: 'clamp(26px, 5vw, 40px)', fontFamily: 'var(--font-display)', fontWeight: 400, color: 'var(--dor-ink)', margin: 0 }}>
             מה לא שייך? לחץ על הדבר השונה
           </h2>
           <div style={{
@@ -99,24 +101,24 @@ const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
             gridTemplateColumns: isLandscape ? 'repeat(4, 1fr)' : 'repeat(2, 1fr)',
             gap: isLandscape ? 10 : 16,
             width: '100%',
-            maxWidth: isLandscape ? 500 : 360,
+            maxWidth: isLandscape ? (isTablet ? 880 : 500) : 360,
           }}>
             {challenge.items.map((emoji, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSelect(idx)}
                 style={{
-                  backgroundColor: 'white',
-                  border: '4px solid rgba(255,255,255,0.9)',
+                  backgroundColor: 'var(--dor-panel)',
+                  border: '1px solid var(--dor-border)',
                   borderRadius: '20px',
                   padding: '24px',
-                  minHeight: isLandscape ? 90 : 120,
-                  fontSize: 'clamp(48px, 12vw, 72px)',
+                  minHeight: isLandscape ? (isTablet ? 180 : 90) : 120,
+                  fontSize: isTablet ? 'clamp(48px, 12vw, 116px)' : 'clamp(48px, 12vw, 72px)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.2)',
+                  boxShadow: '0 3px 0 var(--dor-lip), var(--dor-shadow-card)',
                   transition: 'transform 0.2s',
                 }}
                 onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
@@ -134,7 +136,7 @@ const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
           title="מה לא שייך? 🔍"
           buttonText="בוא נשחק! 🔍"
           onStart={() => setShowInstructions(false)}
-          accentColor="#0891B2"
+          accentColor="var(--game-accent)"
         >
           <p>🔍 <strong>מצא את הדבר השונה!</strong></p>
           <p>👆 <strong>לחץ על מה שלא שייך</strong></p>
@@ -147,7 +149,7 @@ const WhatDoesntBelongGame = ({ onExit, soundManager }) => {
         show={showCelebration}
         successText="כל הכבוד! 🎉"
         photo={celebrationPhoto}
-        accentColor="#16A34A"
+        accentColor="var(--game-accent)"
         numberOfPieces={200}
       />
     </div>

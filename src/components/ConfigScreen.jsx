@@ -8,6 +8,9 @@ import {
   normalizeMonsterDragChompPeopleCount,
   MONSTER_DRAG_CHOMP_PEOPLE_MIN,
   MONSTER_DRAG_CHOMP_PEOPLE_MAX,
+  normalizePhotoPuzzlePieces,
+  PHOTO_PUZZLE_PIECES_MIN,
+  PHOTO_PUZZLE_PIECES_MAX,
 } from '../lib/defaultConfig';
 import {
   GAME_DIFFICULTY,
@@ -47,7 +50,7 @@ const baseSelectStyle = {
   appearance: 'none',
   WebkitAppearance: 'none',
   backgroundImage:
-    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%235c6578' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%237a7266' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'left 12px center',
   backgroundSize: 20,
@@ -59,6 +62,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [memoryPairs, setMemoryPairs] = useState(config.memoryPairs ?? 3);
   const [monsterDragChompPeopleCount, setMonsterDragChompPeopleCount] = useState(
     normalizeMonsterDragChompPeopleCount(config.monsterDragChompPeopleCount)
+  );
+  const [photoPuzzlePieces, setPhotoPuzzlePieces] = useState(
+    normalizePhotoPuzzlePieces(config.photoPuzzlePieces)
   );
   const [shadowMatchDifficulty, setShadowMatchDifficulty] = useState(
     normalizeGameDifficulty(config.shadowMatchDifficulty)
@@ -72,11 +78,20 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [waterSortDifficulty, setWaterSortDifficulty] = useState(
     normalizeGameDifficulty(config.waterSortDifficulty)
   );
-  const [footballDifficulty, setFootballDifficulty] = useState(
-    normalizeGameDifficulty(config.footballDifficulty)
+  const [dinoSneakDifficulty, setDinoSneakDifficulty] = useState(
+    normalizeGameDifficulty(config.dinoSneakDifficulty)
   );
-  const [footballDragDifficulty, setFootballDragDifficulty] = useState(
-    normalizeGameDifficulty(config.footballDragDifficulty)
+  const [dinoStompDifficulty, setDinoStompDifficulty] = useState(
+    normalizeGameDifficulty(config.dinoStompDifficulty)
+  );
+  const [webSlingDifficulty, setWebSlingDifficulty] = useState(
+    normalizeGameDifficulty(config.webSlingDifficulty)
+  );
+  const [snakeGardenDifficulty, setSnakeGardenDifficulty] = useState(
+    normalizeGameDifficulty(config.snakeGardenDifficulty)
+  );
+  const [roomTidyDifficulty, setRoomTidyDifficulty] = useState(
+    normalizeGameDifficulty(config.roomTidyDifficulty)
   );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
@@ -89,6 +104,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   );
   const [feedbackSoundsEnabled, setFeedbackSoundsEnabled] = useState(
     config.feedbackSoundsEnabled !== undefined ? config.feedbackSoundsEnabled : true
+  );
+  const [encouragementSoundsEnabled, setEncouragementSoundsEnabled] = useState(
+    config.encouragementSoundsEnabled === true
   );
   const [visibleGames, setVisibleGames] = useState(
     config.visibleGames?.length ? config.visibleGames : DEFAULT_VISIBLE_GAMES
@@ -108,9 +126,13 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setMonsterDragChompPeopleCount(
       normalizeMonsterDragChompPeopleCount(config.monsterDragChompPeopleCount)
     );
+    setPhotoPuzzlePieces(normalizePhotoPuzzlePieces(config.photoPuzzlePieces));
     setShadowMatchDifficulty(normalizeGameDifficulty(config.shadowMatchDifficulty));
-    setFootballDifficulty(normalizeGameDifficulty(config.footballDifficulty));
-    setFootballDragDifficulty(normalizeGameDifficulty(config.footballDragDifficulty));
+    setDinoSneakDifficulty(normalizeGameDifficulty(config.dinoSneakDifficulty));
+    setDinoStompDifficulty(normalizeGameDifficulty(config.dinoStompDifficulty));
+    setWebSlingDifficulty(normalizeGameDifficulty(config.webSlingDifficulty));
+    setSnakeGardenDifficulty(normalizeGameDifficulty(config.snakeGardenDifficulty));
+    setRoomTidyDifficulty(normalizeGameDifficulty(config.roomTidyDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -118,6 +140,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setRunnerDashCharacter(normalizeRunnerDashCharacter(config.runnerDashCharacter));
     setMusicEnabled(config.musicEnabled !== undefined ? config.musicEnabled : false);
     setFeedbackSoundsEnabled(config.feedbackSoundsEnabled !== undefined ? config.feedbackSoundsEnabled : true);
+    setEncouragementSoundsEnabled(config.encouragementSoundsEnabled === true);
     setVisibleGames(config.visibleGames?.length ? config.visibleGames : DEFAULT_VISIBLE_GAMES);
     setBackgroundId(config.backgroundId ?? DEFAULT_BACKGROUND_ID);
     setThemeMode(config.themeMode === 'twilight' ? 'twilight' : 'light');
@@ -156,6 +179,16 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     });
   };
 
+  /** The common case: a plain קל / בינוני / קשה picker. */
+  function difficultyControl(value, setValue, options = GAME_DIFFICULTY_OPTIONS) {
+    return {
+      label: 'רמת קושי',
+      value,
+      options,
+      onChange: (v) => setValue(normalizeGameDifficulty(v)),
+    };
+  }
+
   const handleMusicToggle = () => {
     const nextValue = !musicEnabled;
     setMusicEnabled(nextValue);
@@ -187,6 +220,74 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setter((prev) => [...prev, { id: createPhraseId(), text: '', audioKey: null }]);
   };
 
+  /**
+   * What each game lets you tune, keyed by game id. Rendered on the game's own
+   * row in the משחקים tab, so a setting only ever appears for a game that is
+   * actually on the home screen — difficulty and visibility are one decision.
+   */
+  const numberOptions = (from, to, format) =>
+    Array.from({ length: to - from + 1 }, (_, i) => {
+      const num = from + i;
+      return { value: num, label: format(num) };
+    });
+
+  const gameControls = {
+    memory: [
+      {
+        label: 'כמות זוגות',
+        value: memoryPairs,
+        options: numberOptions(2, 20, (n) => `${n} זוגות (${n * 2} קלפים)`),
+        onChange: (v) => setMemoryPairs(Number(v)),
+        hint: `קושי משוער: ${difficultyLabel}`,
+      },
+    ],
+    'monster-drag-chomp': [
+      {
+        // The game toggles between monster-eats-friends and kid-eats-monsters,
+        // so the count is worded for whoever is on the tray this round.
+        label: 'כמה לאכול',
+        value: monsterDragChompPeopleCount,
+        options: numberOptions(
+          MONSTER_DRAG_CHOMP_PEOPLE_MIN,
+          MONSTER_DRAG_CHOMP_PEOPLE_MAX,
+          (n) => `${n} חברים / מפלצות`
+        ),
+        onChange: (v) => setMonsterDragChompPeopleCount(normalizeMonsterDragChompPeopleCount(Number(v))),
+        hint: 'תקף לשני הכיוונים — מפלצת שאוכלת חברים או ילד שאוכל מפלצות',
+      },
+    ],
+    'photo-puzzle': [
+      {
+        label: 'כמה חלקים',
+        value: photoPuzzlePieces,
+        options: numberOptions(PHOTO_PUZZLE_PIECES_MIN, PHOTO_PUZZLE_PIECES_MAX, (n) => `${n} חלקים`),
+        onChange: (v) => setPhotoPuzzlePieces(normalizePhotoPuzzlePieces(Number(v))),
+      },
+    ],
+    'shadow-match': [difficultyControl(shadowMatchDifficulty, setShadowMatchDifficulty)],
+    'rhythm-tap': [
+      difficultyControl(rhythmTapDifficulty, setRhythmTapDifficulty, RHYTHM_TAP_DIFFICULTY_OPTIONS),
+    ],
+    'maze-rescue': [difficultyControl(mazeRescueDifficulty, setMazeRescueDifficulty)],
+    'water-sort': [
+      difficultyControl(waterSortDifficulty, setWaterSortDifficulty, WATER_SORT_DIFFICULTY_OPTIONS),
+    ],
+    'dino-sneak': [difficultyControl(dinoSneakDifficulty, setDinoSneakDifficulty)],
+    'dino-stomp': [difficultyControl(dinoStompDifficulty, setDinoStompDifficulty)],
+    'web-sling': [difficultyControl(webSlingDifficulty, setWebSlingDifficulty)],
+    'snake-garden': [difficultyControl(snakeGardenDifficulty, setSnakeGardenDifficulty)],
+    'room-tidy': [difficultyControl(roomTidyDifficulty, setRoomTidyDifficulty)],
+    'runner-dash': [
+      difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
+      {
+        label: 'דמות',
+        value: runnerDashCharacter,
+        options: RUNNER_DASH_CHARACTER_OPTIONS,
+        onChange: (v) => setRunnerDashCharacter(normalizeRunnerDashCharacter(v)),
+      },
+    ],
+  };
+
   const handleSave = () => {
     const filteredWin = winPhrases.filter((p) => p.text?.trim());
     const filteredLose = losePhrases.filter((p) => p.text?.trim());
@@ -194,8 +295,12 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       themeMode,
       memoryPairs,
       monsterDragChompPeopleCount: normalizeMonsterDragChompPeopleCount(monsterDragChompPeopleCount),
-      footballDifficulty: normalizeGameDifficulty(footballDifficulty),
-      footballDragDifficulty: normalizeGameDifficulty(footballDragDifficulty),
+      photoPuzzlePieces: normalizePhotoPuzzlePieces(photoPuzzlePieces),
+      dinoSneakDifficulty: normalizeGameDifficulty(dinoSneakDifficulty),
+      dinoStompDifficulty: normalizeGameDifficulty(dinoStompDifficulty),
+      webSlingDifficulty: normalizeGameDifficulty(webSlingDifficulty),
+      snakeGardenDifficulty: normalizeGameDifficulty(snakeGardenDifficulty),
+      roomTidyDifficulty: normalizeGameDifficulty(roomTidyDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -204,6 +309,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       runnerDashCharacter: normalizeRunnerDashCharacter(runnerDashCharacter),
       musicEnabled,
       feedbackSoundsEnabled,
+      encouragementSoundsEnabled,
       visibleGames: visibleGames.length ? visibleGames : DEFAULT_VISIBLE_GAMES,
       visibilityVersion: GAME_VISIBILITY_SCHEMA_VERSION,
       backgroundId,
@@ -213,14 +319,21 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     onClose();
   };
 
+  /** Replaced at build time by vite `define`; falls back in a bare test env. */
+  const buildStamp = typeof __BUILD_STAMP__ === 'string' ? __BUILD_STAMP__ : '';
+
   const handleReset = () => {
     const def = getDefaultConfig();
     setMemoryPairs(def.memoryPairs);
     setMonsterDragChompPeopleCount(
       normalizeMonsterDragChompPeopleCount(def.monsterDragChompPeopleCount)
     );
-    setFootballDifficulty(def.footballDifficulty);
-    setFootballDragDifficulty(def.footballDragDifficulty);
+    setPhotoPuzzlePieces(normalizePhotoPuzzlePieces(def.photoPuzzlePieces));
+    setDinoSneakDifficulty(def.dinoSneakDifficulty);
+    setDinoStompDifficulty(def.dinoStompDifficulty);
+    setWebSlingDifficulty(def.webSlingDifficulty);
+    setSnakeGardenDifficulty(def.snakeGardenDifficulty);
+    setRoomTidyDifficulty(def.roomTidyDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);
@@ -229,6 +342,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setRunnerDashCharacter(normalizeRunnerDashCharacter(def.runnerDashCharacter));
     setMusicEnabled(def.musicEnabled);
     setFeedbackSoundsEnabled(def.feedbackSoundsEnabled);
+    setEncouragementSoundsEnabled(def.encouragementSoundsEnabled === true);
     setVisibleGames(def.visibleGames);
     setBackgroundId(def.backgroundId);
     setThemeMode(def.themeMode === 'twilight' ? 'twilight' : 'light');
@@ -251,10 +365,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
         fontWeight: 800,
         color: '#FFFFFF',
         cursor: 'pointer',
-        background: value
-          ? 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)'
-          : 'linear-gradient(135deg, #94A3B8 0%, #64748B 100%)',
-        boxShadow: value ? '0 8px 14px rgba(34,197,94,0.28)' : '0 6px 12px rgba(100,116,139,0.22)',
+        background: value ? 'var(--dor-moss)' : 'var(--dor-ink-subtle)',
+        boxShadow: '0 2px 0 rgba(74,62,46,0.18)',
       }}
     >
       {value ? 'פועל' : 'כבוי'}
@@ -281,10 +393,10 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
             width: '100%',
             padding: '10px 12px',
             borderRadius: 10,
-            border: '2px solid #E2E8F0',
+            border: '2px solid var(--dor-border)',
             fontSize: 15,
             fontWeight: 700,
-            color: '#1F2937',
+            color: 'var(--dor-ink)',
             textAlign: 'right',
           }}
           aria-label={`phrase-${index + 1}`}
@@ -299,8 +411,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
             padding: '10px 12px',
             fontSize: 16,
             cursor: canRemove ? 'pointer' : 'not-allowed',
-            backgroundColor: canRemove ? '#FEE2E2' : '#E2E8F0',
-            color: canRemove ? '#B91C1C' : '#94A3B8',
+            backgroundColor: canRemove ? 'color-mix(in srgb, var(--dor-clay) 26%, var(--dor-panel))' : 'var(--dor-mist)',
+            color: canRemove ? 'var(--dor-ember-dark)' : 'var(--dor-ink-subtle)',
             fontWeight: 900,
           }}
           title="מחק"
@@ -326,10 +438,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
         style={{ boxShadow: '0 24px 64px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6)', direction: 'rtl' }}
       >
         <div
-          className="relative flex-shrink-0 overflow-hidden border-b border-white/15"
+          className="relative flex-shrink-0 overflow-hidden"
           style={{
-            background: 'linear-gradient(125deg, #0c1222 0%, #1a2744 38%, #0f1a2e 100%)',
-            boxShadow: 'inset 0 -2px 0 rgba(201, 162, 39, 0.35)',
+            background: 'linear-gradient(150deg, var(--dor-ember) 0%, var(--dor-ember-dark) 100%)',
           }}
         >
           {/* Decoration only — must stay under interactive layer (z-0) */}
@@ -356,7 +467,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                   הגדרות
                 </h2>
                 <p className="mt-1 font-sans text-xs font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                  מסוף בקרה
+                  מסוף בקרה{buildStamp ? ` · ${buildStamp}` : ''}
                 </p>
               </div>
               <div
@@ -383,13 +494,13 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                     style={
                       active
                         ? {
-                            backgroundColor: '#ffffff',
-                            color: '#0f1729',
-                            border: '2px solid #ffffff',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                            backgroundColor: 'var(--dor-panel)',
+                            color: 'var(--dor-ink)',
+                            border: '2px solid var(--dor-panel)',
+                            boxShadow: '0 2px 0 rgba(74,62,46,0.2)',
                           }
                         : {
-                            backgroundColor: 'rgba(15, 23, 42, 0.55)',
+                            backgroundColor: 'rgba(255, 253, 248, 0.18)',
                             color: '#ffffff',
                             border: '2px solid rgba(255,255,255,0.45)',
                           }
@@ -412,160 +523,6 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
           {activeTab === TAB_IDS.GENERAL && (
             <>
               <div style={cardStyle}>
-                <h3 style={cardTitleStyle}>🧠 רמת קושי למשחקים</h3>
-                <div style={threeColStyle}>
-                  <div>
-                    <label style={fieldLabelStyle}>זיכרון - כמות זוגות</label>
-                    <select
-                      value={memoryPairs}
-                      onChange={(e) => setMemoryPairs(Number(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((num) => (
-                        <option key={num} value={num}>
-                          {num} זוגות ({num * 2} קלפים)
-                        </option>
-                      ))}
-                    </select>
-                    <div style={{ ...subtleTextStyle, marginTop: 6 }}>קושי משוער: {difficultyLabel}</div>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>מפלצת מעל החברים — כמה חברים</label>
-                    <select
-                      value={monsterDragChompPeopleCount}
-                      onChange={(e) =>
-                        setMonsterDragChompPeopleCount(
-                          normalizeMonsterDragChompPeopleCount(Number(e.target.value))
-                        )
-                      }
-                      style={baseSelectStyle}
-                    >
-                      {Array.from(
-                        { length: MONSTER_DRAG_CHOMP_PEOPLE_MAX - MONSTER_DRAG_CHOMP_PEOPLE_MIN + 1 },
-                        (_, i) => MONSTER_DRAG_CHOMP_PEOPLE_MIN + i
-                      ).map((num) => (
-                        <option key={num} value={num}>
-                          {num} חברים על המגש
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>צלליות</label>
-                    <select
-                      value={shadowMatchDifficulty}
-                      onChange={(e) => setShadowMatchDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {GAME_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>סיימון</label>
-                    <select
-                      value={rhythmTapDifficulty}
-                      onChange={(e) => setRhythmTapDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {RHYTHM_TAP_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>המבוך</label>
-                    <select
-                      value={mazeRescueDifficulty}
-                      onChange={(e) => setMazeRescueDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {GAME_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>ווטר סורט</label>
-                    <select
-                      value={waterSortDifficulty}
-                      onChange={(e) => setWaterSortDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {WATER_SORT_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>מרוץ 3D — קושי</label>
-                    <select
-                      value={runnerDashDifficulty}
-                      onChange={(e) => setRunnerDashDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {GAME_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>מרוץ 3D — דמות</label>
-                    <select
-                      value={runnerDashCharacter}
-                      onChange={(e) => setRunnerDashCharacter(normalizeRunnerDashCharacter(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {RUNNER_DASH_CHARACTER_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>כדורגל ⚽</label>
-                    <select
-                      value={footballDifficulty}
-                      onChange={(e) => setFootballDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {GAME_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={fieldLabelStyle}>כדורגל גרירה 🥅</label>
-                    <select
-                      value={footballDragDifficulty}
-                      onChange={(e) => setFootballDragDifficulty(normalizeGameDifficulty(e.target.value))}
-                      style={baseSelectStyle}
-                    >
-                      {GAME_DIFFICULTY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div style={cardStyle}>
                 <h3 style={cardTitleStyle}>🔊 אודיו</h3>
                 <div style={toggleRowStyle}>
                   <div>
@@ -577,9 +534,18 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                 <div style={{ ...toggleRowStyle, marginTop: 10 }}>
                   <div>
                     <div style={fieldLabelStyle}>קולות משוב</div>
-                    <div style={subtleTextStyle}>ניצחון, עידוד והצלחות</div>
+                    <div style={subtleTextStyle}>ניצחון והצלחות</div>
                   </div>
                   {renderSwitch(feedbackSoundsEnabled, () => setFeedbackSoundsEnabled((prev) => !prev))}
+                </div>
+                <div style={{ ...toggleRowStyle, marginTop: 10 }}>
+                  <div>
+                    <div style={fieldLabelStyle}>קולות עידוד</div>
+                    <div style={subtleTextStyle}>"תמשיך לנסות" אחרי טעות</div>
+                  </div>
+                  {renderSwitch(encouragementSoundsEnabled, () =>
+                    setEncouragementSoundsEnabled((prev) => !prev)
+                  )}
                 </div>
               </div>
 
@@ -613,8 +579,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                       cursor: 'pointer',
                       background:
                         themeMode === 'twilight'
-                          ? 'linear-gradient(135deg, #2a3d52 0%, #1a2332 100%)'
-                          : 'linear-gradient(135deg, #f4efe6 0%, #e4ecf5 100%)',
+                          ? 'linear-gradient(135deg, #38332e 0%, #221f1c 100%)'
+                          : 'linear-gradient(135deg, #f9f5ee 0%, #efe9de 100%)',
                       color: themeMode === 'twilight' ? '#fff' : 'var(--dor-ink)',
                       border: '1px solid var(--dor-border-strong)',
                     }}
@@ -630,7 +596,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
             <>
               <div style={cardStyle}>
                 <h3 style={cardTitleStyle}>🧩 משחקים בדף הבית</h3>
-                <p style={subtleTextStyle}>בחרו מה להציג ושנו סדר בלחיצה על החצים.</p>
+                <p style={subtleTextStyle}>
+                  בחרו מה להציג, שנו סדר בחצים, וכוונו את רמת הקושי של כל משחק — הכול כאן.
+                </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {visibleGames.map((gameId, index) => {
                     const game = ALL_GAMES.find((item) => item.id === gameId);
@@ -639,9 +607,9 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                       <div
                         key={game.id}
                         style={{
-                          border: '1px solid #CBD5E1',
+                          border: '1px solid var(--dor-border)',
                           borderRadius: 12,
-                          backgroundColor: '#FFFFFF',
+                          backgroundColor: 'var(--dor-panel-elevated)',
                           padding: '10px 12px',
                           display: 'grid',
                           gridTemplateColumns: 'auto 1fr auto',
@@ -668,12 +636,12 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                           </button>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          {game.id === 'monster-munch' || game.id === 'monster-drag-chomp' ? (
+                          {game.id === 'monster-drag-chomp' ? (
                             <MonsterMunchMenuIcon size={22} />
                           ) : (
                             <span style={{ fontSize: 22 }}>{game.icon}</span>
                           )}
-                          <span style={{ fontSize: 16, fontWeight: 800, color: '#1E293B' }}>{game.title}</span>
+                          <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--dor-ink)' }}>{game.title}</span>
                         </div>
                         <button
                           type="button"
@@ -686,12 +654,46 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                             fontSize: 13,
                             fontWeight: 800,
                             cursor: visibleGames.length <= 1 ? 'not-allowed' : 'pointer',
-                            backgroundColor: visibleGames.length <= 1 ? '#E2E8F0' : '#FEE2E2',
-                            color: visibleGames.length <= 1 ? '#94A3B8' : '#B91C1C',
+                            backgroundColor: visibleGames.length <= 1 ? 'var(--dor-mist)' : 'color-mix(in srgb, var(--dor-clay) 26%, var(--dor-panel))',
+                            color: visibleGames.length <= 1 ? 'var(--dor-ink-subtle)' : 'var(--dor-ember-dark)',
                           }}
                         >
                           הסתר
                         </button>
+
+                        {(gameControls[game.id] ?? []).length > 0 && (
+                          <div
+                            style={{
+                              gridColumn: '1 / -1',
+                              display: 'grid',
+                              gridTemplateColumns: gameSettingsColumns,
+                              gap: 10,
+                              paddingTop: 10,
+                              marginTop: 2,
+                              borderTop: '1px solid var(--dor-border)',
+                            }}
+                          >
+                            {gameControls[game.id].map((control) => (
+                              <div key={control.label}>
+                                <label style={{ ...fieldLabelStyle, fontSize: 13 }}>{control.label}</label>
+                                <select
+                                  value={control.value}
+                                  onChange={(e) => control.onChange(e.target.value)}
+                                  style={{ ...baseSelectStyle, padding: '9px 12px', fontSize: 15, paddingLeft: 36 }}
+                                >
+                                  {control.options.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                      {option.label}
+                                    </option>
+                                  ))}
+                                </select>
+                                {control.hint && (
+                                  <div style={{ ...subtleTextStyle, marginTop: 5 }}>{control.hint}</div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -708,17 +710,17 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                       <div
                         key={game.id}
                         style={{
-                          border: '2px dashed #CBD5E1',
+                          border: '2px dashed var(--dor-border-strong)',
                           borderRadius: 12,
-                          backgroundColor: '#F8FAFC',
+                          backgroundColor: 'var(--dor-panel)',
                           padding: '10px 12px',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#475569' }}>
-                          {game.id === 'monster-munch' || game.id === 'monster-drag-chomp' ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--dor-ink-muted)' }}>
+                          {game.id === 'monster-drag-chomp' ? (
                             <MonsterMunchMenuIcon size={20} />
                           ) : (
                             <span style={{ fontSize: 20 }}>{game.icon}</span>
@@ -735,8 +737,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                             fontSize: 13,
                             fontWeight: 800,
                             cursor: 'pointer',
-                            backgroundColor: '#DCFCE7',
-                            color: '#15803D',
+                            backgroundColor: 'color-mix(in srgb, var(--dor-sage) 26%, var(--dor-panel))',
+                            color: 'var(--dor-moss)',
                           }}
                         >
                           הצג
@@ -765,7 +767,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                 <button
                   type="button"
                   onClick={() => addPhrase(setWinPhrases)}
-                  style={addButtonStyle('#DCFCE7', '#166534')}
+                  style={addButtonStyle('color-mix(in srgb, var(--dor-sage) 26%, var(--dor-panel))', 'var(--dor-moss)')}
                 >
                   + הוסף משפט ניצחון
                 </button>
@@ -785,7 +787,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
                 <button
                   type="button"
                   onClick={() => addPhrase(setLosePhrases)}
-                  style={addButtonStyle('#FFEDD5', '#9A3412')}
+                  style={addButtonStyle('color-mix(in srgb, var(--dor-ochre) 26%, var(--dor-panel))', 'var(--dor-ember-dark)')}
                 >
                   + הוסף משפט עידוד
                 </button>
@@ -815,7 +817,7 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
             <button
               type="button"
               onClick={handleSave}
-              className="min-h-[48px] flex-1 cursor-pointer rounded-dor-lg border-none bg-dor-ember py-3 font-sans text-base font-black text-white shadow-[0_4px_0_var(--dor-ember-dark)]"
+              className="min-h-[48px] flex-1 cursor-pointer rounded-dor-lg border-none bg-dor-ember py-3 font-sans text-base font-black text-white shadow-[0_4px_0_rgba(74,62,46,0.22)]"
             >
               שמור
             </button>
@@ -827,11 +829,11 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
 };
 
 const cardStyle = {
-  backgroundColor: 'var(--dor-panel-elevated)',
-  border: '1px solid var(--dor-border-strong)',
+  backgroundColor: 'var(--dor-panel)',
+  border: '1px solid var(--dor-border)',
   borderRadius: 'var(--dor-radius-lg)',
-  padding: '14px',
-  boxShadow: 'var(--dor-shadow-sm)',
+  padding: '16px',
+  boxShadow: '0 2px 0 var(--dor-lip), var(--dor-shadow-sm)',
 };
 
 const cardTitleStyle = {
@@ -856,7 +858,7 @@ const subtleTextStyle = {
 };
 
 const toggleRowStyle = {
-  border: '1px solid var(--dor-border-strong)',
+  border: '1px solid var(--dor-border)',
   borderRadius: 'var(--dor-radius-md)',
   padding: '10px 12px',
   display: 'flex',
@@ -866,11 +868,12 @@ const toggleRowStyle = {
   backgroundColor: 'var(--dor-panel)',
 };
 
-const threeColStyle = {
-  display: 'grid',
-  gap: 10,
-  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-};
+/**
+ * A game's own settings sit side by side when there is room and stack when not.
+ * auto-**fill** rather than auto-fit, so a game with a single קל/בינוני/קשה picker
+ * gets a picker-sized control instead of one stretched across the whole row.
+ */
+const gameSettingsColumns = 'repeat(auto-fill, minmax(190px, 1fr))';
 
 const addButtonStyle = (bg, fg) => ({
   width: '100%',
@@ -891,7 +894,7 @@ const arrowButtonStyle = (disabled) => ({
   fontSize: 13,
   fontWeight: 900,
   cursor: disabled ? 'not-allowed' : 'pointer',
-  backgroundColor: disabled ? '#E2E8F0' : '#334155',
+  backgroundColor: disabled ? 'var(--dor-mist)' : 'var(--dor-ink)',
   color: '#FFFFFF',
 });
 

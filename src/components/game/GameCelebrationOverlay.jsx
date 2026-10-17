@@ -2,16 +2,19 @@ import Confetti from 'react-confetti';
 import { motion, useReducedMotion } from 'framer-motion';
 import { CELEBRATION_OVERLAY } from '../../lib/designTokens';
 
+/** Muted confetti drawn from the Warm Paper & Clay scale */
+const CONFETTI_COLORS = ['#8fa98a', '#c97b5a', '#d9a441', '#7e9bb5', '#c08b8b', '#9887a8'];
+
 /**
- * Celebration — confetti + rim-lit trophy card + radial bloom
+ * Celebration — confetti over a warm paper card.
  */
 export default function GameCelebrationOverlay({
   show,
   successText = 'כל הכבוד! 🎉',
   subtitle,
   photo,
-  accentColor = 'var(--dor-teal)',
-  numberOfPieces = 320,
+  accentColor = 'var(--game-accent)',
+  numberOfPieces = 220,
   /** Called when the photo fails to load (e.g. missing file on server); parent can swap URL */
   onPhotoError,
 }) {
@@ -28,63 +31,49 @@ export default function GameCelebrationOverlay({
           height={window.innerHeight}
           recycle={false}
           numberOfPieces={pieces}
+          colors={CONFETTI_COLORS}
         />
       )}
       <div
         className="fixed inset-0 z-overlay flex items-center justify-center p-6"
-        style={{
-          backgroundColor: 'rgba(6, 10, 20, 0.45)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-        }}
+        style={{ backgroundColor: CELEBRATION_OVERLAY.scrim }}
         role="status"
         aria-live="polite"
         aria-label={successText}
       >
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(201,76,59,0.35)_0%,transparent_55%)]"
-          aria-hidden
-        />
-        <div className="dor-modal-rim relative max-w-[92vw]">
-          <motion.div
-            className="flex max-h-[80vh] flex-col items-center gap-4 overflow-hidden rounded-[calc(var(--dor-radius-xl)-2px)] bg-dor-panel-elevated text-center"
+        <motion.div
+          className="relative flex max-h-[80vh] max-w-[92vw] flex-col items-center gap-4 overflow-hidden rounded-dor-xl border border-dor-border bg-dor-panel text-center"
+          style={{
+            padding: CELEBRATION_OVERLAY.padding,
+            boxShadow: '0 4px 0 var(--dor-lip), var(--dor-shadow-card-hover)',
+          }}
+          initial={reduce ? false : { opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+        >
+          <p
+            className="font-display m-0 font-normal leading-[1.1]"
             style={{
-              padding: CELEBRATION_OVERLAY.padding,
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -24px 60px -40px rgba(201,76,59,0.12)',
+              fontSize: CELEBRATION_OVERLAY.successTextSize,
+              color: accentColor,
             }}
-            initial={reduce ? false : { opacity: 0, scale: 0.82, y: 28 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 22 }}
           >
-            <p
-              className="font-display m-0 font-normal leading-[1.05]"
-              style={{
-                fontSize: CELEBRATION_OVERLAY.successTextSize,
-                backgroundImage: `linear-gradient(100deg, ${accentColor} 0%, var(--dor-gold-bright) 40%, ${accentColor} 85%)`,
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                color: 'transparent',
-                WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.12))',
-              }}
-            >
-              {successText}
-            </p>
-            {photo && (
-              <img
-                key={photo}
-                src={photo}
-                alt="Dor"
-                className="max-w-full rounded-dor-lg object-cover shadow-[0_16px_40px_-12px_rgba(0,0,0,0.35)] ring-2 ring-white/40"
-                style={{ maxHeight: CELEBRATION_OVERLAY.photoMaxHeight }}
-                onError={() => onPhotoError?.()}
-              />
-            )}
-            {subtitle && (
-              <p className="m-0 font-sans text-xl font-bold text-dor-ink-muted">{subtitle}</p>
-            )}
-          </motion.div>
-        </div>
+            {successText}
+          </p>
+          {photo && (
+            <img
+              key={photo}
+              src={photo}
+              alt="Dor"
+              className="max-w-full rounded-dor-lg border border-dor-border object-cover shadow-dor-card"
+              style={{ maxHeight: CELEBRATION_OVERLAY.photoMaxHeight }}
+              onError={() => onPhotoError?.()}
+            />
+          )}
+          {subtitle && (
+            <p className="m-0 font-sans text-xl font-bold text-dor-ink-muted">{subtitle}</p>
+          )}
+        </motion.div>
       </div>
     </>
   );
