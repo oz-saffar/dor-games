@@ -120,6 +120,12 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
   const [xylophoneDifficulty, setXylophoneDifficulty] = useState(
     normalizeGameDifficulty(config.xylophoneDifficulty)
   );
+  const [dotToDotDifficulty, setDotToDotDifficulty] = useState(
+    normalizeGameDifficulty(config.dotToDotDifficulty)
+  );
+  const [whackAMoleDifficulty, setWhackAMoleDifficulty] = useState(
+    normalizeGameDifficulty(config.whackAMoleDifficulty)
+  );
   const [runnerDashDifficulty, setRunnerDashDifficulty] = useState(
     normalizeGameDifficulty(config.runnerDashDifficulty, GAME_DIFFICULTY.HARD)
   );
@@ -169,6 +175,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setTicTacToeDifficulty(normalizeGameDifficulty(config.ticTacToeDifficulty));
     setColorBookDifficulty(normalizeGameDifficulty(config.colorBookDifficulty));
     setXylophoneDifficulty(normalizeGameDifficulty(config.xylophoneDifficulty));
+    setDotToDotDifficulty(normalizeGameDifficulty(config.dotToDotDifficulty));
+    setWhackAMoleDifficulty(normalizeGameDifficulty(config.whackAMoleDifficulty));
     setRhythmTapDifficulty(normalizeGameDifficulty(config.rhythmTapDifficulty));
     setMazeRescueDifficulty(normalizeGameDifficulty(config.mazeRescueDifficulty));
     setWaterSortDifficulty(normalizeGameDifficulty(config.waterSortDifficulty));
@@ -322,6 +330,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     'tic-tac-toe': [difficultyControl(ticTacToeDifficulty, setTicTacToeDifficulty)],
     'color-book': [difficultyControl(colorBookDifficulty, setColorBookDifficulty)],
     'xylophone': [difficultyControl(xylophoneDifficulty, setXylophoneDifficulty)],
+    'dot-to-dot': [difficultyControl(dotToDotDifficulty, setDotToDotDifficulty)],
+    'whack-a-mole': [difficultyControl(whackAMoleDifficulty, setWhackAMoleDifficulty)],
     'runner-dash': [
       difficultyControl(runnerDashDifficulty, setRunnerDashDifficulty),
       {
@@ -355,6 +365,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
       ticTacToeDifficulty: normalizeGameDifficulty(ticTacToeDifficulty),
       colorBookDifficulty: normalizeGameDifficulty(colorBookDifficulty),
       xylophoneDifficulty: normalizeGameDifficulty(xylophoneDifficulty),
+      dotToDotDifficulty: normalizeGameDifficulty(dotToDotDifficulty),
+      whackAMoleDifficulty: normalizeGameDifficulty(whackAMoleDifficulty),
       shadowMatchDifficulty: normalizeGameDifficulty(shadowMatchDifficulty),
       rhythmTapDifficulty: normalizeGameDifficulty(rhythmTapDifficulty),
       mazeRescueDifficulty: normalizeGameDifficulty(mazeRescueDifficulty),
@@ -397,6 +409,8 @@ const ConfigScreen = ({ onClose, config, onConfigChange, onReset, soundManager }
     setTicTacToeDifficulty(def.ticTacToeDifficulty);
     setColorBookDifficulty(def.colorBookDifficulty);
     setXylophoneDifficulty(def.xylophoneDifficulty);
+    setDotToDotDifficulty(def.dotToDotDifficulty);
+    setWhackAMoleDifficulty(def.whackAMoleDifficulty);
     setShadowMatchDifficulty(def.shadowMatchDifficulty);
     setRhythmTapDifficulty(def.rhythmTapDifficulty);
     setMazeRescueDifficulty(def.mazeRescueDifficulty);

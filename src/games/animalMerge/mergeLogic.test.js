@@ -28,7 +28,9 @@ describe('mergeLogic', () => {
         }
       }
     }
-  });
+    // 3000 full games: comfortably under a second alone, but a loaded parallel
+    // run has pushed it past the 5s default.
+  }, 30000);
 
   it('spawns into a full pairless board by duplicating a tile', () => {
     expect(hasMerge(spawn([0, 1, 2, 3], mulberry32(1)))).toBe(true);

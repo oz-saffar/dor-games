@@ -15,5 +15,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
+    // ~30 jsdom suites that mount whole games: one worker per core starved them
+    // and random tests blew the 5s default. Fewer workers, a roomier budget.
+    maxWorkers: 6,
+    testTimeout: 20000,
   },
 })

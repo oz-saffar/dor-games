@@ -37,6 +37,8 @@ export const ALL_GAMES = [
   { id: 'tic-tac-toe', title: 'איקס עיגול', icon: '⭕', accent: '#9887a8' },
   { id: 'color-book', title: 'צובעים', icon: '🖍️', accent: '#c97b5a' },
   { id: 'xylophone', title: 'קסילופון', icon: '🎼', accent: '#7e9bb5' },
+  { id: 'dot-to-dot', title: 'מחברים נקודות', icon: '✍️', accent: '#8fa98a' },
+  { id: 'whack-a-mole', title: 'הכה בחפרפרת', icon: '🐹', accent: '#c9b08a' },
   { id: 'dino-ar', title: 'ציד AR', icon: '🦖', accent: '#6e8b6e', externalUrl: '/dino-ar/' },
   { id: 'dino-hunt', title: 'ציד דינוזאורים', icon: '🦕', accent: '#8fa98a', externalUrl: '/dino-hunt/' },
 ];

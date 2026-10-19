@@ -12,7 +12,7 @@ import {
 } from './runnerDashCharacter';
 
 export const CONFIG_STORAGE_KEY = 'dor-games-config';
-export const GAME_VISIBILITY_SCHEMA_VERSION = 32;
+export const GAME_VISIBILITY_SCHEMA_VERSION = 34;
 
 export const MONSTER_DRAG_CHOMP_PEOPLE_MIN = 3;
 export const MONSTER_DRAG_CHOMP_PEOPLE_MAX = 15;
@@ -64,6 +64,8 @@ const AUTO_SHOW_GAME_IDS_V29 = ['kitchen-sort'];
 const AUTO_SHOW_GAME_IDS_V30 = ['tic-tac-toe'];
 const AUTO_SHOW_GAME_IDS_V31 = ['color-book'];
 const AUTO_SHOW_GAME_IDS_V32 = ['xylophone'];
+const AUTO_SHOW_GAME_IDS_V33 = ['dot-to-dot'];
+const AUTO_SHOW_GAME_IDS_V34 = ['whack-a-mole'];
 
 export const getDefaultConfig = () => ({
   /** 'light' | 'twilight' — maps to data-theme on <html> */
@@ -91,6 +93,8 @@ export const getDefaultConfig = () => ({
   ticTacToeDifficulty: GAME_DIFFICULTY.EASY,
   colorBookDifficulty: GAME_DIFFICULTY.EASY,
   xylophoneDifficulty: GAME_DIFFICULTY.EASY,
+  dotToDotDifficulty: GAME_DIFFICULTY.EASY,
+  whackAMoleDifficulty: GAME_DIFFICULTY.EASY,
   /** מרוץ 3D — ברירת מחדל 'קשה' כמו לפני הוספת רמות */
   runnerDashDifficulty: GAME_DIFFICULTY.HARD,
   runnerDashCharacter: RUNNER_DASH_CHARACTER_DEFAULT,
@@ -295,6 +299,20 @@ export function mergeConfigWithDefaults(saved) {
     visibleGames = [...visibleGames, ...toAppend];
   }
 
+  if (visibilityVersion < 33) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V33.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
+  if (visibilityVersion < 34) {
+    const toAppend = AUTO_SHOW_GAME_IDS_V34.filter(
+      (id) => validIds.has(id) && !visibleGames.includes(id)
+    );
+    visibleGames = [...visibleGames, ...toAppend];
+  }
+
   const themeMode = migrated.themeMode === 'twilight' ? 'twilight' : 'light';
 
   return {
@@ -373,6 +391,14 @@ export function mergeConfigWithDefaults(saved) {
     xylophoneDifficulty: normalizeGameDifficulty(
       migrated.xylophoneDifficulty,
       defaults.xylophoneDifficulty
+    ),
+    dotToDotDifficulty: normalizeGameDifficulty(
+      migrated.dotToDotDifficulty,
+      defaults.dotToDotDifficulty
+    ),
+    whackAMoleDifficulty: normalizeGameDifficulty(
+      migrated.whackAMoleDifficulty,
+      defaults.whackAMoleDifficulty
     ),
     runnerDashDifficulty: normalizeGameDifficulty(
       migrated.runnerDashDifficulty,

@@ -105,7 +105,7 @@ describe('mergeConfigWithDefaults', () => {
       visibleGames: ['memory', 'bubbles', 'colors', 'shadow-match', 'numbers'],
       visibilityVersion: 20,
     });
-    expect(merged.visibleGames).toEqual(['memory', 'numbers', 'snake-garden', 'room-tidy', 'arrow-escape', 'pop-it', 'spot-difference', 'animal-merge', 'four-in-row', 'kitchen-sort', 'tic-tac-toe', 'color-book', 'xylophone']);
+    expect(merged.visibleGames).toEqual(['memory', 'numbers', 'snake-garden', 'room-tidy', 'arrow-escape', 'pop-it', 'spot-difference', 'animal-merge', 'four-in-row', 'kitchen-sort', 'tic-tac-toe', 'color-book', 'xylophone', 'dot-to-dot', 'whack-a-mole']);
     expect(merged.visibilityVersion).toBe(GAME_VISIBILITY_SCHEMA_VERSION);
   });
 
@@ -114,7 +114,7 @@ describe('mergeConfigWithDefaults', () => {
       visibleGames: ['memory', 'bubbles'],
       visibilityVersion: 21,
     });
-    expect(merged.visibleGames).toEqual(['memory', 'bubbles', 'snake-garden', 'room-tidy', 'arrow-escape', 'pop-it', 'spot-difference', 'animal-merge', 'four-in-row', 'kitchen-sort', 'tic-tac-toe', 'color-book', 'xylophone']);
+    expect(merged.visibleGames).toEqual(['memory', 'bubbles', 'snake-garden', 'room-tidy', 'arrow-escape', 'pop-it', 'spot-difference', 'animal-merge', 'four-in-row', 'kitchen-sort', 'tic-tac-toe', 'color-book', 'xylophone', 'dot-to-dot', 'whack-a-mole']);
   });
 
   it('normalizes invalid runnerDashCharacter to default', () => {

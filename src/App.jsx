@@ -257,6 +257,12 @@ function App() {
               ...(currentGame === 'xylophone' && {
                 difficulty: config.xylophoneDifficulty,
               }),
+              ...(currentGame === 'dot-to-dot' && {
+                difficulty: config.dotToDotDifficulty,
+              }),
+              ...(currentGame === 'whack-a-mole' && {
+                difficulty: config.whackAMoleDifficulty,
+              }),
               ...(currentGame === 'photo-puzzle' && {
                 pieceCount: config.photoPuzzlePieces,
               }),

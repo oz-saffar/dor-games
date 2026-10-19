@@ -45,16 +45,24 @@ describe('ארבע בשורה', () => {
   it('drops a disc, ignores taps while the bot thinks, then the bot replies', async () => {
     vi.spyOn(Math, 'random').mockReturnValue(0.99);
     await start();
-    await act(async () => { fireEvent.pointerDown(col(2)); });
-    expect(owned('dor')).toHaveLength(1);
-    expect(document.querySelector('[data-cell="4-2"]').dataset.owner).toBe('dor');
-    expect(turnOf()).toBe('bot');
+    // Own the clock for the think window: under a loaded full-suite run, real time
+    // could run past the bot's ~700ms think inside a single act().
+    vi.useFakeTimers();
+    try {
+      await act(async () => { fireEvent.pointerDown(col(2)); });
+      expect(owned('dor')).toHaveLength(1);
+      expect(document.querySelector('[data-cell="4-2"]').dataset.owner).toBe('dor');
+      expect(turnOf()).toBe('bot');
 
-    await act(async () => { fireEvent.pointerDown(col(3)); });
-    expect(owned('dor')).toHaveLength(1);
+      await act(async () => { fireEvent.pointerDown(col(3)); });
+      expect(owned('dor')).toHaveLength(1);
 
-    await waitFor(() => expect(owned('bot')).toHaveLength(1), { timeout: 3000 });
-    expect(turnOf()).toBe('dor');
+      await act(async () => { vi.advanceTimersByTime(3000); });
+      expect(owned('bot')).toHaveLength(1);
+      expect(turnOf()).toBe('dor');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('a full column does nothing but wobble', async () => {
