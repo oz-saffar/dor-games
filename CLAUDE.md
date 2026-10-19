@@ -1,6 +1,6 @@
 # Dor Games — Project Instructions
 
-Hebrew educational game platform for Dor (דור), a 4-year-old. React 19 + Vite + Tailwind CSS + Framer Motion. 21 lazy-loaded games with Hebrew audio, RTL support, and Dor's personal photos as rewards.
+Hebrew educational game platform for Dor (דור), a 4-year-old. React 19 + Vite + Tailwind CSS + Framer Motion. 34 lazy-loaded games with Hebrew audio, RTL support, and Dor's personal photos as rewards.
 
 ## Git / GitHub
 
