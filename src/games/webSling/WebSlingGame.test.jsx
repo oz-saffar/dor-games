@@ -25,9 +25,15 @@ const flushFrames = (frames, dtMs = 16) => {
 const popVillainNodes = () =>
   Array.from(document.querySelectorAll('g[clip-path^="url(#wsClip"]'));
 
-/** Only villains that can still be webbed — a wrapped one lingers as a cocoon. */
+/**
+ * Only villains that can still be webbed — a wrapped one lingers as a cocoon.
+ * Gliders count too: waiting on pop-ups alone made the 8-catch test flaky, since
+ * once Green Goblin joins the pool an unlucky run of glide-bys starved the budget.
+ */
 const catchableNodes = () =>
-  popVillainNodes().filter((n) => n.getAttribute('data-state') !== 'wrapped');
+  Array.from(document.querySelectorAll('g[data-villain]')).filter(
+    (n) => n.getAttribute('data-state') !== 'wrapped',
+  );
 
 /**
  * Recover screen-space centre from what the game rendered. Characters with a
@@ -55,13 +61,16 @@ const readVillain = (node) => {
 /** Waits for a villain to finish rising, taps it, and returns its position. */
 const catchOneVillain = () => {
   let nodes = [];
-  for (let i = 0; i < 400 && nodes.length === 0; i += 1) {
-    flushFrames(1);
+  // 48ms steps (the game clamps dt at 100ms): the same game time as 16ms frames
+  // for a third of the renders, which is what made this helper slow enough to
+  // time out on a loaded machine.
+  for (let i = 0; i < 200 && nodes.length === 0; i += 1) {
+    flushFrames(1, 48);
     nodes = catchableNodes();
   }
   if (nodes.length === 0) throw new Error('no villain appeared');
 
-  flushFrames(34); // riseMs = 420 on easy
+  flushFrames(12, 48); // riseMs = 420 on easy
   nodes = catchableNodes();
   if (nodes.length === 0) throw new Error('villain vanished before the tap');
 
@@ -204,7 +213,8 @@ describe('WebSlingGame', () => {
     // and play continues: villains keep coming after the old win threshold
     catchOneVillain();
     expect(screen.getByText(/🕸️ 8/)).toBeInTheDocument();
-  });
+    // eight full catches at up to 400 rendered frames each
+  }, 60000);
 
   it('shoots a web but does not score when the tap misses', () => {
     const soundManager = mountAndPickHero();
